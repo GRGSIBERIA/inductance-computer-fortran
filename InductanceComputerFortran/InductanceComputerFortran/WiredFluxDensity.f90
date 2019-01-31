@@ -34,6 +34,7 @@ contains
     end function
     
     function wired_flux_density(wire_position, coil_position, coil_forward, coil_right, coil_height, coil_radius, sigma, numof_dtheta, numof_dradius)
+        implicit none
         double precision, dimension(3), intent(in) :: wire_position, coil_position, coil_forward, coil_right
         double precision, intent(in) :: coil_height, coil_radius, sigma
         integer, intent(in) :: numof_dtheta, numof_dradius
@@ -59,6 +60,7 @@ contains
     end function
     
     function wired_flux_density_on_coil(numof_wires, wire_positions, numof_coils, coil_positions, coil_forwards, coil_rights, coil_heights, coil_radius, sigma, numof_dtheta, numof_dradius)
+        implicit none
         integer, intent(in) :: numof_wires, numof_coils, numof_dtheta, numof_dradius
         double precision, dimension(numof_coils), intent(in) :: coil_heights, coil_radius
         double precision, dimension(numof_wires, 3), intent(in) :: wire_positions
