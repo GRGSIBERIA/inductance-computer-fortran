@@ -33,7 +33,7 @@ module Math
         double precision, dimension(3), intent(in) :: V
         double precision length
         
-        length = V(1) * V1(1) + V(2) * V(2) + V(3) * V(3)
+        length = V(1) * V(1) + V(2) * V(2) + V(3) * V(3)
         length = sqrt(length)
     end function
 end module
