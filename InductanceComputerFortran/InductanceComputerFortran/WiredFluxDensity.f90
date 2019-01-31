@@ -30,7 +30,7 @@ contains
         frac_down = length(frac_down_vec)
         frac_down = frac_down * frac_down * frac_down
         
-        double_quad = frac_up / frac_down
+        double_quad = frac_up / frac_down * dr * dt
     end function
     
     function wired_flux_density(wire_position, coil_position, coil_forward, coil_right, coil_height, coil_radius, sigma, numof_dtheta, numof_dradius)
