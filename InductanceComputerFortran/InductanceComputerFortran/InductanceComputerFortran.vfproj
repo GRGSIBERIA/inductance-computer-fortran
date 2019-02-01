@@ -25,6 +25,7 @@
 				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration></Configurations>
 	<Files>
 		<Filter Name="ソースファイル" Filter="f90;for;f;fpp;ftn;def;odl;idl">
+		<File RelativePath=".\FieldFluxDensity.f90"/>
 		<File RelativePath=".\InductanceComputerFortran.f90"/>
 		<File RelativePath=".\Math.f90"/>
 		<File RelativePath=".\WiredFluxDensity.f90"/></Filter>
