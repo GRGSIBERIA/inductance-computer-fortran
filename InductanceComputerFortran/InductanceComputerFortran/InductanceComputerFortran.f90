@@ -1,16 +1,8 @@
-!  InductanceComputerFortran.f90 
-!
-!  関数:
-!  InductanceComputerFortran - コンソール・アプリケーションのエントリーポイント。
-!
-
-!****************************************************************************
-!
-!  プログラム: InductanceComputerFortran
-!
-!  目的:  コンソール・アプリケーションのエントリーポイント。
-!
-!****************************************************************************
+    !> @file InductanceComputerFortran.f90
+    !! @brief 誘導起電力を求めるプログラム
+    !! @details
+    !!      クラス名，サブルーチン ：キャメルケース
+    !!      変数名，関数          ：スネークケース
 
 program InductanceComputerFortran
 
@@ -53,8 +45,8 @@ contains
         coil_radius = 1.0d0
         sigma = 1.0d0
         gamma = 1.0d0
-        numof_dradius = 500
-        numof_dtheta = 500
+        numof_dradius = 200
+        numof_dtheta = 200
         
         wired_flux_densities = wired_flux_density_on_coil(numof_wires, wire_positions, numof_coils, coil_positions, coil_forwards, coil_rights, coil_heights, coil_radius, 1.0d0, numof_dtheta, numof_dradius)
         
