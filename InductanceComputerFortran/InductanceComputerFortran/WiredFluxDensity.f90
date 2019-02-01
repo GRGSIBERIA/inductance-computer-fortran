@@ -1,9 +1,10 @@
 module WiredFluxDensity
     implicit none
 contains
-    function double_quad(dr, dt, wire_position, coil_position, coil_forward, coil_right, sigma)
+    function double_quad(dr, dt, real_dr, real_dt, wire_position, coil_position, coil_forward, coil_right, sigma)
         USE Math
         implicit none
+        double precision, intent(in) :: real_dr, real_dt
         double precision, intent(in) :: dr, dt, sigma
         double precision, dimension(3), intent(in) :: wire_position, coil_position, coil_forward, coil_right
         double precision double_quad
@@ -30,7 +31,7 @@ contains
         frac_down = length(frac_down_vec)
         frac_down = frac_down * frac_down * frac_down
         
-        double_quad = frac_up / frac_down * dr * dt
+        double_quad = frac_up / frac_down * real_dr * real_dt
     end function
     
     function wired_flux_density(wire_position, coil_position, coil_forward, coil_right, coil_height, coil_radius, sigma, numof_dtheta, numof_dradius)
@@ -51,8 +52,8 @@ contains
         DO ntheta = 1, numof_dtheta
             DO nradius = 1, numof_dradius
                 density_map(ntheta, nradius) = &
-                    double_quad((nradius-1) * delta_radius, (ntheta-1) * delta_theta, wire_position, coil_position + moving_unit_vector, coil_forward, coil_right, sigma) - &
-                    double_quad((nradius-1) * delta_radius, (ntheta-1) * delta_theta, wire_position, coil_position - moving_unit_vector, coil_forward, coil_right, sigma)
+                    double_quad((nradius-1) * delta_radius, (ntheta-1) * delta_theta, delta_radius, delta_theta, wire_position, coil_position + moving_unit_vector, coil_forward, coil_right, sigma) - &
+                    double_quad((nradius-1) * delta_radius, (ntheta-1) * delta_theta, delta_radius, delta_theta, wire_position, coil_position - moving_unit_vector, coil_forward, coil_right, sigma)
             END DO
         END DO
         
