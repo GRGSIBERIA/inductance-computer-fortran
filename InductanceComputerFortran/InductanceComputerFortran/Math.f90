@@ -21,10 +21,7 @@ module Math
         double precision, intent(in) :: Ar, Br
         double precision, dimension(3), intent(in) :: Ai, Bi
         
-        mul_quaternion_I = (/ &
-            Ai(2) * Bi(3) - Ai(3) * Bi(2), &
-            Ai(3) * Bi(1) - Ai(1) * Bi(3), &
-            Ai(1) * Bi(2) - Ai(2) * Bi(1) /)
+        mul_quaternion_I = cross(Ai, Bi)
         mul_quaternion_I = Ar * Bi + Br * Ai + mul_quaternion_I
     end function
     
@@ -35,5 +32,17 @@ module Math
         double precision length
         
         length = sqrt(DOT_PRODUCT(V, V))
+    end function
+    
+    !> ŠOÏ‚ğ•Ô‚·
+    function cross(A, B)
+        implicit none
+        double precision, dimension(3), intent(in) :: A, B
+        double precision, dimension(3) :: cross
+        
+        cross = (/ &
+            A(2) * B(3) - A(3) * B(2), &
+            A(3) * B(1) - A(1) * B(3), &
+            A(1) * B(2) - A(2) * B(1) /)
     end function
 end module

@@ -45,8 +45,8 @@ contains
         coil_radius = 1.0d0
         sigma = 1.0d0
         gamma = 1.0d0
-        numof_dradius = 200
-        numof_dtheta = 200
+        numof_dradius = 100
+        numof_dtheta = 100
         
         wired_flux_densities = wired_flux_density_on_coil(numof_wires, wire_positions, numof_coils, coil_positions, coil_forwards, coil_rights, coil_heights, coil_radius, 1.0d0, numof_dtheta, numof_dradius)
         
