@@ -90,7 +90,9 @@ contains
         
         OPEN(FD, file="field_flux_density.csv", status="replace")
         
-        write (FD, *) numof_size(1), numof_size(2), numof_size(3)
+        DO i = 1, 3
+            write (FD, *) numof_size(i)
+        END DO
         
         DO i = 1, numof_size(1)
             DO j = 1, numof_size(2)
