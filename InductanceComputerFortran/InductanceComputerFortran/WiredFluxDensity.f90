@@ -17,7 +17,7 @@ contains
         
         Qi = coil_forward * sinv
         Qr = cosv
-        Ri = coil_forward * -sinv
+        Ri = coil_forward * SIGN(sinv, -1.0d0) ! 符号反転
         Rr = cosv
         Pi = coil_right
         Pr = 0.0d0
