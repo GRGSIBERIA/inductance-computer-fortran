@@ -1,18 +1,16 @@
-    !> @file InductanceComputerFortran.f90
-    !! @brief —U“±‹N“d—Í‚ğ‹‚ß‚éƒvƒƒOƒ‰ƒ€
+ï»¿    !> @file InductanceComputerFortran.f90
+    !! @brief 
     !! @details
-    !!      ƒNƒ‰ƒX–¼CƒTƒuƒ‹[ƒ`ƒ“ FƒLƒƒƒƒ‹ƒP[ƒX
-    !!      •Ï”–¼CŠÖ”          FƒXƒl[ƒNƒP[ƒX
 
 program InductanceComputerFortran
 
     implicit none
 
-    ! •Ï”éŒ¾
+    ! å®šæ•°å€¤ã®å…¥åŠ›
     integer, parameter :: numof_wires = 100, numof_coils = 2
     integer, parameter, dimension(3) :: numof_size = (/ 200, 200, 200 /)
 
-    ! Main ‚Ì–{•¶
+    ! ãƒ¡ã‚¤ãƒ³ãƒ—ãƒ­ã‚°ãƒ©ãƒ 
     CALL Main(numof_wires, numof_coils, numof_size)
     
 contains
@@ -57,8 +55,14 @@ contains
         numof_dradius = 100
         numof_dtheta = 100
         
-        wired_flux_densities = wired_flux_density_on_coil(numof_wires, wire_positions, numof_coils, coil_positions, coil_forwards, coil_rights, coil_heights, coil_radius, sigma, numof_dtheta, numof_dradius)
-        field_flux_densities = field_flux_density(origin, numof_size, field_size, field_forward, field_right, numof_wires, wire_positions, wired_flux_densities, numof_coils, coil_forwards, gamma)
+        wired_flux_densities = wired_flux_density_on_coil(&
+            numof_wires, wire_positions, &
+            numof_coils, coil_positions, coil_forwards, coil_rights, coil_heights, coil_radius, sigma, &
+            numof_dtheta, numof_dradius)
+        field_flux_densities = field_flux_density(origin, &
+            numof_size, field_size, field_forward, field_right, &
+            numof_wires, wire_positions, wired_flux_densities, &
+            numof_coils, coil_forwards, gamma)
         
         print *, wired_flux_densities
         CALL PrintWiredFluxDensity(numof_wires, wired_flux_densities)

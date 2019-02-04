@@ -1,9 +1,9 @@
-module Math
+ï»¿module Math
     implicit none
     
     contains
     
-    !> ƒNƒH[ƒ^ƒjƒIƒ“‚ÌÏCÀ”‚ğ•Ô‚·
+    !> ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³ã®ç©ï¼Œå®Ÿæ•°ã‚’è¿”ã™
     function mul_quaternion_R(Ar, Ai, Br, Bi)
         implicit none
         double precision mul_quaternion_R
@@ -14,7 +14,7 @@ module Math
         return
     end function
     
-    !> ƒNƒH[ƒ^ƒjƒIƒ“‚ÌÏC‹•”‚ğ•Ô‚·
+    !> ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³ã®ç©ï¼Œè™šæ•°ã‚’è¿”ã™
     function mul_quaternion_I(Ar, Ai, Br, Bi)
         implicit none
         double precision, dimension(3) :: mul_quaternion_I
@@ -25,7 +25,7 @@ module Math
         mul_quaternion_I = Ar * Bi + Br * Ai + mul_quaternion_I
     end function
     
-    !> ƒxƒNƒgƒ‹‚Ì’·‚³‚ğ•Ô‚·
+    !> ãƒ™ã‚¯ãƒˆãƒ«ã®é•·ã•ã‚’è¿”ã™
     function length(V)
         implicit none
         double precision, dimension(3), intent(in) :: V
@@ -34,7 +34,7 @@ module Math
         length = sqrt(DOT_PRODUCT(V, V))
     end function
     
-    !> ŠOÏ‚ğ•Ô‚·
+    !> å¤–ç©ã‚’è¿”ã™
     function cross(A, B)
         implicit none
         double precision, dimension(3), intent(in) :: A, B

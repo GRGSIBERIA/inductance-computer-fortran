@@ -1,4 +1,4 @@
-module WiredFluxDensity
+﻿module WiredFluxDensity
     implicit none
 contains
     function double_quad(dr, dt, real_dr, real_dt, wire_position, coil_position, coil_forward, coil_right, sigma)
@@ -34,7 +34,10 @@ contains
         double_quad = frac_up / frac_down * real_dr * real_dt
     end function
     
-    function wired_flux_density(wire_position, coil_position, coil_forward, coil_right, coil_height, coil_radius, sigma, numof_dtheta, numof_dradius)
+    function wired_flux_density(&
+            wire_position, &
+            coil_position, coil_forward, coil_right, coil_height, coil_radius, sigma, &
+            numof_dtheta, numof_dradius)
         implicit none
         double precision, dimension(3), intent(in) :: wire_position, coil_position, coil_forward, coil_right
         double precision, intent(in) :: coil_height, coil_radius, sigma
@@ -52,15 +55,20 @@ contains
         DO ntheta = 1, numof_dtheta
             DO nradius = 1, numof_dradius
                 density_map(ntheta, nradius) = &
-                    double_quad((nradius-1) * delta_radius, (ntheta-1) * delta_theta, delta_radius, delta_theta, wire_position, coil_position + moving_unit_vector, coil_forward, coil_right, sigma) - &
-                    double_quad((nradius-1) * delta_radius, (ntheta-1) * delta_theta, delta_radius, delta_theta, wire_position, coil_position - moving_unit_vector, coil_forward, coil_right, sigma)
+                    double_quad((nradius-1) * delta_radius, (ntheta-1) * delta_theta, delta_radius, delta_theta, &
+                        wire_position, coil_position + moving_unit_vector, coil_forward, coil_right, sigma) - &
+                    double_quad((nradius-1) * delta_radius, (ntheta-1) * delta_theta, delta_radius, delta_theta, &
+                        wire_position, coil_position - moving_unit_vector, coil_forward, coil_right, sigma)
             END DO
         END DO
         
         wired_flux_density = SUM(density_map)
     end function
     
-    function wired_flux_density_on_coil(numof_wires, wire_positions, numof_coils, coil_positions, coil_forwards, coil_rights, coil_heights, coil_radius, sigma, numof_dtheta, numof_dradius)
+    function wired_flux_density_on_coil(&
+            numof_wires, wire_positions, &
+            numof_coils, coil_positions, coil_forwards, coil_rights, coil_heights, coil_radius, sigma, &
+            numof_dtheta, numof_dradius)
         implicit none
         integer, intent(in) :: numof_wires, numof_coils, numof_dtheta, numof_dradius
         double precision, dimension(numof_coils), intent(in) :: coil_heights, coil_radius
@@ -76,7 +84,10 @@ contains
             DO ci = 1, numof_coils
                 wired_flux_density_on_coil(wi) = &
                     wired_flux_density_on_coil(wi) + &
-                    wired_flux_density(wire_positions(wi,:), coil_positions(ci,:), coil_forwards(ci,:), coil_rights(ci,:), coil_heights(ci), coil_radius(ci), sigma, numof_dtheta, numof_dradius)
+                    wired_flux_density(&
+                        wire_positions(wi,:), &
+                        coil_positions(ci,:), coil_forwards(ci,:), coil_rights(ci,:), coil_heights(ci), coil_radius(ci), sigma, &
+                        numof_dtheta, numof_dradius)
             END DO
         END DO
     end function

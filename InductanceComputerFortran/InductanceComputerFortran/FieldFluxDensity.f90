@@ -1,4 +1,4 @@
-module FieldFluxDensity
+Ôªømodule FieldFluxDensity
     implicit none
     
 contains
@@ -12,7 +12,7 @@ contains
         frac_down = length(wire_position - measure_point)
         frac_down = frac_down * frac_down * frac_down
         
-        ! É[ÉçèúéZñhé~
+        ! „Çº„É≠Èô§ÁÆóÈò≤Ê≠¢
         IF (frac_down == 0.0d0) THEN
             compute_fraction = 0.0d0
         ELSE
@@ -37,7 +37,9 @@ contains
         
     end function
     
-    function compute_inducted_wire(measure_point, numof_wire, wire_positions, wired_flux_densities, numof_coil, coil_forwards, gamma)
+    function compute_inducted_wire(measure_point, &
+            numof_wire, wire_positions, wired_flux_densities, &
+            numof_coil, coil_forwards, gamma)
         implicit none
         integer, intent(in) :: numof_wire, numof_coil
         double precision, dimension(numof_wire), intent(in) :: wired_flux_densities
@@ -52,7 +54,9 @@ contains
         
         DO wi = 1, numof_wire
             compute_inducted_wire = compute_inducted_wire + &
-                (compute_inner_product_coil(measure_point, wire_positions(wi,:), numof_coil, coil_forwards) * wired_flux_densities(wi) * gamma)
+                ( &
+                    compute_inner_product_coil(measure_point, wire_positions(wi,:), numof_coil, coil_forwards) * &
+                    wired_flux_densities(wi) * gamma)
         END DO
         
     end function
@@ -68,7 +72,10 @@ contains
         
     end function
     
-    function field_flux_density(origin, numof_field, field_size, field_forward, field_right, numof_wire, wire_positions, wired_flux_densities, numof_coil, coil_forwards, gamma)
+    function field_flux_density(origin, &
+            numof_field, field_size, field_forward, field_right, &
+            numof_wire, wire_positions, wired_flux_densities, &
+            numof_coil, coil_forwards, gamma)
         USE Math
         implicit none
         integer, intent(in) :: numof_wire, numof_coil
@@ -93,7 +100,8 @@ contains
             DO y = 1, numof_field(2)
                 DO z = 1, numof_field(3)
                     measure_point = get_measure_point3D(x, y, z, field_delta, origin, field_right, field_top, field_forward)
-                    field_flux_density(x,y,z) = compute_inducted_wire(measure_point, numof_wire, wire_positions, wired_flux_densities, numof_coil, coil_forwards, gamma)
+                    field_flux_density(x,y,z) = compute_inducted_wire(&
+                            measure_point, numof_wire, wire_positions, wired_flux_densities, numof_coil, coil_forwards, gamma)
                 END DO
             END DO
         END DO
