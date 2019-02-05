@@ -21,8 +21,8 @@ module Printing
     subroutine PrintFieldData(numof_size, field_data, path)
         implicit none
         integer, dimension(3), intent(in) :: numof_size
-        double precision, dimension(numof_size(1), numof_size(2), numof_size(3)), intent(in) :: gradient
-        character*256, intent(in) :: path
+        double precision, dimension(numof_size(1), numof_size(2), numof_size(3)), intent(in) :: field_data
+        character, dimension(128), intent(in) :: path
         integer, parameter :: FD = 18
         integer i, j, k
         
@@ -47,15 +47,17 @@ module Printing
         implicit none
         integer, dimension(3), intent(in) :: numof_size
         double precision, dimension(numof_size(1), numof_size(2), numof_size(3)), intent(in) :: field_flux_densities
+        character, dimension(128) :: path = "field_flux_density.csv"
         
-        CALL PrintFieldData(numof_size, field_flux_densities, "field_flux_density.csv")
+        CALL PrintFieldData(numof_size, field_flux_densities, path)
     end subroutine
     
     subroutine PrintGradient(numof_size, gradient)
         implicit none
         integer, dimension(3), intent(in) :: numof_size
         double precision, dimension(numof_size(1), numof_size(2), numof_size(3)), intent(in) :: gradient
+        character, dimension(128) :: path = "gradient.csv"
         
-        CALL PrintFieldData(numof_size, gradient, "gradient.csv")
+        CALL PrintFieldData(numof_size, gradient, path)
     end subroutine
 end module
