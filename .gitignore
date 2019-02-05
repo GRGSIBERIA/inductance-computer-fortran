@@ -334,3 +334,8 @@ ASALocalRun/
 .localhistory/
 InductanceComputerFortran/InductanceComputerFortran/wired_flux_density.csv
 *.csv
+*.th
+*.aux
+*.cfg
+*.mod
+*.mod
