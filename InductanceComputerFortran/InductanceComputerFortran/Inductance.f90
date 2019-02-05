@@ -15,6 +15,7 @@ module Inductance
     end function
     
     function inductance_from_field(numof_field, delta_field, field_fdA, field_fdB, delta_time)
+        USE Math
         implicit none
         integer, dimension(3), intent(in) :: numof_field
         double precision, dimension(3), intent(in) :: delta_field
