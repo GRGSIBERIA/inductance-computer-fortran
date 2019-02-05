@@ -1,3 +1,6 @@
+﻿!> 空間の磁束勾配を求める
+!! @brief 空間の磁束勾配を求める
+    
 module FieldGradient
     implicit none
     
