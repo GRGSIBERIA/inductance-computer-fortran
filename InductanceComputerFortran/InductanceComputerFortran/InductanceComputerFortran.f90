@@ -88,8 +88,6 @@ program InductanceComputerFortran
         !CALL PrintWiredFluxDensity(numof_wires, wired_flux_densities)
         !CALL PrintFieldFluxDensity(numof_size, field_flux_densities)
     end subroutine
-    
-    
 
 end program InductanceComputerFortran
 

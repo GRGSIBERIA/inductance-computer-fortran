@@ -40,6 +40,7 @@
 		<File RelativePath=".\Inductance.f90"/>
 		<File RelativePath=".\InductanceComputerFortran.f90"/>
 		<File RelativePath=".\Math.f90"/>
+		<File RelativePath=".\Printing.f90"/>
 		<File RelativePath=".\WiredFluxDensity.f90"/></Filter>
 		<Filter Name="ヘッダーファイル" Filter="fi;fd"/>
 		<Filter Name="リソースファイル" Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"/>
