@@ -339,3 +339,41 @@ InductanceComputerFortran/InductanceComputerFortran/wired_flux_density.csv
 *.cfg
 *.mod
 *.mod
+*.dat
+*.metadata
+*.xml
+*.trace
+InductanceComputerFortran/InductanceComputerFortran/My Amplifier Results - InductanceComputerFortran/r001hs/sqlite-db/pmu_data/end_tsc/0
+InductanceComputerFortran/InductanceComputerFortran/My Amplifier Results - InductanceComputerFortran/r001hs/sqlite-db/timelinedb/dbint-10988/aggregated/0/0
+InductanceComputerFortran/InductanceComputerFortran/My Amplifier Results - InductanceComputerFortran/r001hs/sqlite-db/timelinedb/dbint-10988/aggregated/0/1
+InductanceComputerFortran/InductanceComputerFortran/My Amplifier Results - InductanceComputerFortran/r001hs/sqlite-db/timelinedb/dbint-10988/aggregated/0/2
+InductanceComputerFortran/InductanceComputerFortran/My Amplifier Results - InductanceComputerFortran/r001hs/sqlite-db/timelinedb/dbint-10988/aggregated/0/3
+InductanceComputerFortran/InductanceComputerFortran/My Amplifier Results - InductanceComputerFortran/r001hs/sqlite-db/timelinedb/dbint-10988/aggregated/0/4
+InductanceComputerFortran/InductanceComputerFortran/My Amplifier Results - InductanceComputerFortran/r001hs/sqlite-db/timelinedb/dbint-10988/aggregated/0/5
+InductanceComputerFortran/InductanceComputerFortran/My Amplifier Results - InductanceComputerFortran/r001hs/sqlite-db/timelinedb/dbint-10988/aggregated/0/6
+InductanceComputerFortran/InductanceComputerFortran/My Amplifier Results - InductanceComputerFortran/r001hs/sqlite-db/timelinedb/dbint-10988/aggregated/0/7
+*.mod
+*.db-journal
+*.amplxe
+*.sc
+*.emon_version
+*.emon
+*.emon_cpu
+*.emon_events
+*.options
+InductanceComputerFortran/InductanceComputerFortran/wiredfluxdensity.mod
+InductanceComputerFortran/InductanceComputerFortran/My Amplifier Results - InductanceComputerFortran/r002hs/sqlite-db/dicer.db
+InductanceComputerFortran/InductanceComputerFortran/My Amplifier Results - InductanceComputerFortran/r001hs/sqlite-db/dicer.db
+InductanceComputerFortran/InductanceComputerFortran/My Amplifier Results - InductanceComputerFortran/r001hs/sqlite-db/_cache_grouper_data4_global_time_interval_metrics/grouper/0
+InductanceComputerFortran/InductanceComputerFortran/My Amplifier Results - InductanceComputerFortran/r001hs/sqlite-db/_cache_grouper_data4_global_data_grouper/grouper/0
+InductanceComputerFortran/InductanceComputerFortran/My Amplifier Results - InductanceComputerFortran/r001hs/sqlite-db/_cache_grouper_data4_dd_thread/grouper/0
+InductanceComputerFortran/InductanceComputerFortran/My Amplifier Results - InductanceComputerFortran/r001hs/.norun
+InductanceComputerFortran/InductanceComputerFortran/My Amplifier Results - InductanceComputerFortran/r000hs/sqlite-db/timelinedb/dbint-15725/aggregated/0/0
+InductanceComputerFortran/InductanceComputerFortran/My Amplifier Results - InductanceComputerFortran/r000hs/sqlite-db/pmu_data/end_tsc/0
+InductanceComputerFortran/InductanceComputerFortran/My Amplifier Results - InductanceComputerFortran/r000hs/sqlite-db/dicer.db
+InductanceComputerFortran/InductanceComputerFortran/My Amplifier Results - InductanceComputerFortran/r000hs/sqlite-db/_cache_grouper_data4_global_time_interval_metrics/grouper/0
+InductanceComputerFortran/InductanceComputerFortran/My Amplifier Results - InductanceComputerFortran/r000hs/sqlite-db/_cache_grouper_data4_global_data_grouper/grouper/0
+InductanceComputerFortran/InductanceComputerFortran/My Amplifier Results - InductanceComputerFortran/r000hs/sqlite-db/_cache_grouper_data4_dd_thread/grouper/0
+InductanceComputerFortran/InductanceComputerFortran/My Amplifier Results - InductanceComputerFortran/r000hs/.norun
+*.mod
+InductanceComputerFortran/InductanceComputerFortran/wiredfluxdensity.mod
