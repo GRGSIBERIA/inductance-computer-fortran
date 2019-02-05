@@ -14,7 +14,7 @@
 				<Tool Name="VFPostBuildEventTool"/>
 				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration>
 		<Configuration Name="Release|Win32" WholeProgramOptimization="true">
-				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" Optimization="optimizeFull" GenAlternateCodePaths="codeForAVX2" UseProcessorExtensions="codeExclusivelyAVX2" Parallelization="true" PrefetchInsertionOpt="prefetchAggressive" BufferedIO="true" MatrixLibrary="mlYes" MtuneConstruct="mcArchSKL" FixedFormLineLength="fixedLength132" OpenMP="OpenMPParallelCode" RuntimeLibrary="rtMultiThreadedDLL"/>
+				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" Optimization="optimizeFull" GenAlternateCodePaths="codeForAVX2" UseProcessorExtensions="codeExclusivelyAVX2" Parallelization="true" PrefetchInsertionOpt="prefetchAggressive" BufferedIO="true" MatrixLibrary="mlYes" MtuneConstruct="mcArchSKL" FixedFormLineLength="fixedLength132" OpenMP="OpenMPParallelCode" FloatingPointModel="fast2" RuntimeLibrary="rtMultiThreadedDLL" UseMkl="mklParallel"/>
 				<Tool Name="VFLinkerTool" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" SubSystem="subSystemConsole" StackReserveSize="214748364" StackCommitSize="214748364" LargeAddressAware="addrAwareLarge"/>
 				<Tool Name="VFResourceCompilerTool"/>
 				<Tool Name="VFMidlTool" SuppressStartupBanner="true"/>
@@ -36,6 +36,8 @@
 	<Files>
 		<Filter Name="ソースファイル" Filter="f90;for;f;fpp;ftn;def;odl;idl">
 		<File RelativePath=".\FieldFluxDensity.f90"/>
+		<File RelativePath=".\FieldGradient.f90"/>
+		<File RelativePath=".\Inductance.f90"/>
 		<File RelativePath=".\InductanceComputerFortran.f90"/>
 		<File RelativePath=".\Math.f90"/>
 		<File RelativePath=".\WiredFluxDensity.f90"/></Filter>
