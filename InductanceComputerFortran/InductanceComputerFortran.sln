@@ -7,12 +7,23 @@ Project("{6989167D-11E4-40FE-8C1A-2192A86A7E90}") = "InductanceComputerFortran",
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Analyze|x64 = Analyze|x64
+		Analyze|x86 = Analyze|x86
+		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{20F885E3-6BB9-4B30-BC61-F4DB05E48D48}.Analyze|x64.ActiveCfg = Analyze|Win32
+		{20F885E3-6BB9-4B30-BC61-F4DB05E48D48}.Analyze|x86.ActiveCfg = Analyze|Win32
+		{20F885E3-6BB9-4B30-BC61-F4DB05E48D48}.Analyze|x86.Build.0 = Analyze|Win32
+		{20F885E3-6BB9-4B30-BC61-F4DB05E48D48}.Debug|x64.ActiveCfg = Debug|Win32
+		{20F885E3-6BB9-4B30-BC61-F4DB05E48D48}.Debug|x64.Build.0 = Debug|Win32
 		{20F885E3-6BB9-4B30-BC61-F4DB05E48D48}.Debug|x86.ActiveCfg = Debug|Win32
 		{20F885E3-6BB9-4B30-BC61-F4DB05E48D48}.Debug|x86.Build.0 = Debug|Win32
+		{20F885E3-6BB9-4B30-BC61-F4DB05E48D48}.Release|x64.ActiveCfg = Release|Win32
+		{20F885E3-6BB9-4B30-BC61-F4DB05E48D48}.Release|x64.Build.0 = Release|Win32
 		{20F885E3-6BB9-4B30-BC61-F4DB05E48D48}.Release|x86.ActiveCfg = Release|Win32
 		{20F885E3-6BB9-4B30-BC61-F4DB05E48D48}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection

@@ -85,7 +85,7 @@ contains
         double precision, dimension(numof_coil, 3), intent(in) :: coil_forwards
         integer, dimension(3), intent(in) :: numof_field
         double precision, intent(in) :: gamma
-        double precision, dimension(3) :: measure_point, field_delta, field_top
+        double precision, dimension(3) :: field_delta, field_top
         double precision, dimension(numof_field(1), numof_field(2), numof_field(3)) :: field_flux_density
         
         integer i, x, y, z
@@ -99,9 +99,9 @@ contains
         DO x = 1, numof_field(1)
             DO y = 1, numof_field(2)
                 DO z = 1, numof_field(3)
-                    measure_point = get_measure_point3D(x, y, z, field_delta, origin, field_right, field_top, field_forward)
                     field_flux_density(x,y,z) = compute_inducted_wire(&
-                            measure_point, numof_wire, wire_positions, wired_flux_densities, numof_coil, coil_forwards, gamma)
+                        get_measure_point3D(x, y, z, field_delta, origin, field_right, field_top, field_forward), &
+                        numof_wire, wire_positions, wired_flux_densities, numof_coil, coil_forwards, gamma)
                 END DO
             END DO
         END DO
