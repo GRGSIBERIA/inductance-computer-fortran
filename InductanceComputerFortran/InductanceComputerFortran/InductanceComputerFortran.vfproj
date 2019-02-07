@@ -39,6 +39,7 @@
 		<File RelativePath=".\FieldGradient.f90"/>
 		<File RelativePath=".\Inductance.f90"/>
 		<File RelativePath=".\InductanceComputerFortran.f90"/>
+		<File RelativePath=".\Loading.f90"/>
 		<File RelativePath=".\Math.f90"/>
 		<File RelativePath=".\Printing.f90"/>
 		<File RelativePath=".\WiredFluxDensity.f90"/></Filter>
