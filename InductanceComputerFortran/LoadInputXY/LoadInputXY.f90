@@ -13,13 +13,21 @@
 !****************************************************************************
 
     program LoadInputXY
-
+    USE InpFile
     implicit none
-
+    
     ! 変数
+    integer, parameter :: inpFD = 20
+    integer, parameter :: xyFD = 21
 
     ! LoadInputXY の本文
-    print *, 'Hello World'
+    open (inpFD, file="E:/temp/rhodes/odb/C3-31.inp", status="old")
+    CALL ReadInpFile(inpFD)
+    close (inpFD)
+    
+    contains
+    
+    
 
     end program LoadInputXY
 
