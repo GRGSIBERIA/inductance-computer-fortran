@@ -9,9 +9,18 @@ program InductanceComputerFortran
     ! 定数値の入力
     integer, parameter :: numof_wires = 100, numof_coils = 2
     integer, parameter, dimension(3) :: numof_size = (/ 200, 200, 200 /)
+    
+    integer, parameter :: debugFlag = 1   ! デバッグ用フラグ
 
-    ! メインプログラム
-    CALL Main(numof_wires, numof_coils, numof_size)
+    IF (debugFlag == 1) THEN
+        ! コマンドライン引数なし
+    ELSE IF (debugFlag == 2) THEN
+        ! コマンドライン引数あり
+        CALL MainIncludeCommandLine()
+    ELSE
+        ! メインプログラム
+        CALL Main(numof_wires, numof_coils, numof_size)
+    END IF
     
     contains
     subroutine ElapsedTime(t1)
@@ -27,6 +36,20 @@ program InductanceComputerFortran
         ENDIF
         
         print "(A, F10.3)", "Elapsed Time: ", diff/DBLE(rate)
+    end subroutine
+    
+    subroutine MainIncludeCommandLine()
+        USE CommandLine
+        USE COMLoader
+        implicit none
+        integer, parameter :: FD = 20
+        
+        CALL GetCommandLine(FD)
+        CALL LoadCOM(FD)
+        
+        print *, timeCount
+        
+        CLOSE (FD)
     end subroutine
     
     subroutine Main(numof_wires, numof_coils, numof_size)

@@ -35,12 +35,14 @@
 				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration></Configurations>
 	<Files>
 		<Filter Name="ソースファイル" Filter="f90;for;f;fpp;ftn;def;odl;idl">
+		<File RelativePath=".\COMLoader.f90"/>
+		<File RelativePath=".\CommandLine.f90"/>
 		<File RelativePath=".\FieldFluxDensity.f90"/>
 		<File RelativePath=".\FieldGradient.f90"/>
 		<File RelativePath=".\Inductance.f90"/>
 		<File RelativePath=".\InductanceComputerFortran.f90"/>
-		<File RelativePath=".\Loading.f90"/>
 		<File RelativePath=".\Math.f90"/>
+		<File RelativePath=".\Part.f90"/>
 		<File RelativePath=".\Printing.f90"/>
 		<File RelativePath=".\WiredFluxDensity.f90"/></Filter>
 		<Filter Name="ヘッダーファイル" Filter="fi;fd"/>
