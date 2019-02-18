@@ -7,6 +7,8 @@ Project("{6989167D-11E4-40FE-8C1A-2192A86A7E90}") = "InductanceComputerFortran",
 EndProject
 Project("{6989167D-11E4-40FE-8C1A-2192A86A7E90}") = "LoadInputXY", "LoadInputXY\LoadInputXY.vfproj", "{D9F0CB04-0329-4A6A-8190-FD757BC34BD3}"
 EndProject
+Project("{6989167D-11E4-40FE-8C1A-2192A86A7E90}") = "CombineLoader", "CombineLoader\CombineLoader.vfproj", "{B7981F8F-C5F9-478B-9A88-C13538E215C8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Analyze|x64 = Analyze|x64
@@ -38,6 +40,16 @@ Global
 		{D9F0CB04-0329-4A6A-8190-FD757BC34BD3}.Release|x64.ActiveCfg = Release|Win32
 		{D9F0CB04-0329-4A6A-8190-FD757BC34BD3}.Release|x86.ActiveCfg = Release|Win32
 		{D9F0CB04-0329-4A6A-8190-FD757BC34BD3}.Release|x86.Build.0 = Release|Win32
+		{B7981F8F-C5F9-478B-9A88-C13538E215C8}.Analyze|x64.ActiveCfg = Release|Win32
+		{B7981F8F-C5F9-478B-9A88-C13538E215C8}.Analyze|x64.Build.0 = Release|Win32
+		{B7981F8F-C5F9-478B-9A88-C13538E215C8}.Analyze|x86.ActiveCfg = Release|Win32
+		{B7981F8F-C5F9-478B-9A88-C13538E215C8}.Analyze|x86.Build.0 = Release|Win32
+		{B7981F8F-C5F9-478B-9A88-C13538E215C8}.Debug|x64.ActiveCfg = Debug|Win32
+		{B7981F8F-C5F9-478B-9A88-C13538E215C8}.Debug|x86.ActiveCfg = Debug|Win32
+		{B7981F8F-C5F9-478B-9A88-C13538E215C8}.Debug|x86.Build.0 = Debug|Win32
+		{B7981F8F-C5F9-478B-9A88-C13538E215C8}.Release|x64.ActiveCfg = Release|Win32
+		{B7981F8F-C5F9-478B-9A88-C13538E215C8}.Release|x86.ActiveCfg = Release|Win32
+		{B7981F8F-C5F9-478B-9A88-C13538E215C8}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
