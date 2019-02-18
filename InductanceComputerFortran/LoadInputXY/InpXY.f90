@@ -38,6 +38,7 @@
     end subroutine
     
     subroutine CloseFiles(inpFD, xyFD)
+        integer, intent(in) :: inpFD, xyFD
         CLOSE (inpFD)
         CLOSE (xyFD)
     end subroutine
