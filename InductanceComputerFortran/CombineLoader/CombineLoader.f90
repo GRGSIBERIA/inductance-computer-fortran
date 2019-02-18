@@ -13,17 +13,16 @@
 !****************************************************************************
 
     program CombineLoader
-    USE CommandLine
+    USE COMLoader
     implicit none
 
-    character(:), allocatable :: combPath
+    integer, parameter :: FD = 20
+    OPEN (FD, file="E:\\temp\\rhodes\\odb\\abaqus.out", status="old")
 
-    CALL GetCommandArgument(1, combPath)
+    CALL LoadCOM(FD)
     
-    print *, combPath
+    CLOSE (FD)
     
-    DEALLOCATE (combPath)
-        
     contains
 
     end program CombineLoader

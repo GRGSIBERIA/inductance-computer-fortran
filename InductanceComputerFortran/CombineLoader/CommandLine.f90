@@ -7,6 +7,7 @@
     !! @param[in]  i 引数番号
     !! @param[out] filePath ファイルパス
     subroutine GetCommandArgument(i, filePath)
+        implicit none
         integer, intent(in) :: i
         character(:), allocatable, intent(out) :: filePath
         integer :: length, status
