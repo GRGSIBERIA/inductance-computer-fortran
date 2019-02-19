@@ -35,6 +35,7 @@
 				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration></Configurations>
 	<Files>
 		<Filter Name="ソースファイル" Filter="f90;for;f;fpp;ftn;def;odl;idl">
+		<File RelativePath="..\CombineLoader\COMFile.f90"/>
 		<File RelativePath=".\COMLoader.f90"/>
 		<File RelativePath=".\CommandLine.f90"/>
 		<File RelativePath=".\FieldFluxDensity.f90"/>

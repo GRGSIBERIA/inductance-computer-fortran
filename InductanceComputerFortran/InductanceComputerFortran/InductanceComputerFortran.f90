@@ -6,20 +6,14 @@ program InductanceComputerFortran
 
     implicit none
 
-    ! 定数値の入力
-    integer, parameter :: numof_wires = 100, numof_coils = 2
-    integer, parameter, dimension(3) :: numof_size = (/ 200, 200, 200 /)
-    
     integer, parameter :: debugFlag = 1   ! デバッグ用フラグ
 
     IF (debugFlag == 1) THEN
-        ! コマンドライン引数なし
+        CALL MainExcludeCommandLine()   ! コマンドライン引数なし
     ELSE IF (debugFlag == 2) THEN
-        ! コマンドライン引数あり
-        CALL MainIncludeCommandLine()
+        CALL MainIncludeCommandLine()   ! コマンドライン引数あり
     ELSE
-        ! メインプログラム
-        CALL Main(numof_wires, numof_coils, numof_size)
+        CALL Main()     ! メインプログラム
     END IF
     
     contains
@@ -38,27 +32,44 @@ program InductanceComputerFortran
         print "(A, F10.3)", "Elapsed Time: ", diff/DBLE(rate)
     end subroutine
     
+    !> コマンドライン引数あり
     subroutine MainIncludeCommandLine()
         USE CommandLine
+        USE COMFileClass
         USE COMLoader
         implicit none
-        integer, parameter :: FD = 20
+        integer, parameter :: bodyFD = 20
+        type(COMFile) body
         
-        CALL GetCommandLine(FD)
-        CALL LoadCOM(FD)
+        CALL GetCommandLine(bodyFD)
         
-        print *, timeCount
+        body = ReadCOM(bodyFD)
         
-        CLOSE (FD)
+        CLOSE (bodyFD)
     end subroutine
     
-    subroutine Main(numof_wires, numof_coils, numof_size)
+    !> コマンドライン引数なしのテスト版
+    subroutine MainExcludeCommandLine()
+        USE COMLoader
+        USE COMFileClass
+        implicit none
+        integer, parameter :: bodyFD = 20
+        type(COMFile) body
+        
+        OPEN (bodyFD, file="E:\\temp\\rhodes\\odb\\abaqus.out", status="old")
+        
+        body = ReadCOM(bodyFD)
+        
+        CLOSE (bodyFD)
+    end subroutine
+    
+    subroutine Main()
         USE WiredFluxDensity
         USE FieldFluxDensity
         USE Printing
         implicit none
-        integer, intent(in) :: numof_wires, numof_coils
-        integer, dimension(3), intent(in) :: numof_size
+        integer, parameter :: numof_wires = 100, numof_coils = 2
+        integer, parameter, dimension(3) :: numof_size = (/ 200, 200, 200 /)
         
         double precision, dimension(numof_wires, 3) :: wire_positions
         double precision, dimension(numof_coils, 3) :: coil_positions, coil_forwards, coil_rights

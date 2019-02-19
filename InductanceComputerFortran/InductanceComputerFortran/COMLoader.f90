@@ -1,12 +1,14 @@
 ﻿    module COMLoader
     USE PartClass
+    USE COMFileClass
     implicit none
     
     integer timeCount
-    double precision, dimension(:), allocatable :: times
-    class(Part), dimension(:), allocatable :: parts
+    double precision, dimension(:), allocatable :: times    ! 時間
+    class(Part), dimension(:), allocatable :: parts         ! パート
     
     contains
+    
     !> COMファイルの読み込み
     !! @param[in] comFD 開封済み.comのFD
     subroutine LoadCOM(comFD)
@@ -34,4 +36,13 @@
             parts(i) = Part(comfd, timeCount)
         END DO
     end subroutine
+    
+    function ReadCOM(comFD)
+        implicit none
+        integer, intent(in) :: comFD
+        type(COMFile) ReadCOM
+        
+        ReadCOM = COMFile(comFD)
+    end function
+        
     end module

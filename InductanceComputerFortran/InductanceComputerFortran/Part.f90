@@ -3,7 +3,7 @@
     
     type Part
         integer nodeCount
-        double precision, dimension(:,:,:), allocatable :: position  ! 時間,節点,XYZ
+        double precision, dimension(:,:,:), allocatable :: position  ! 時間, 節点, XYZ
     contains
     end type
     
