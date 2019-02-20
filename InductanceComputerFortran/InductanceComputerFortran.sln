@@ -5,8 +5,6 @@ VisualStudioVersion = 15.0.28307.168
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{6989167D-11E4-40FE-8C1A-2192A86A7E90}") = "InductanceComputerFortran", "InductanceComputerFortran\InductanceComputerFortran.vfproj", "{20F885E3-6BB9-4B30-BC61-F4DB05E48D48}"
 EndProject
-Project("{6989167D-11E4-40FE-8C1A-2192A86A7E90}") = "CombineLoader", "CombineLoader\CombineLoader.vfproj", "{B7981F8F-C5F9-478B-9A88-C13538E215C8}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Analyze|x64 = Analyze|x64
@@ -28,16 +26,6 @@ Global
 		{20F885E3-6BB9-4B30-BC61-F4DB05E48D48}.Release|x64.Build.0 = Release|Win32
 		{20F885E3-6BB9-4B30-BC61-F4DB05E48D48}.Release|x86.ActiveCfg = Release|Win32
 		{20F885E3-6BB9-4B30-BC61-F4DB05E48D48}.Release|x86.Build.0 = Release|Win32
-		{B7981F8F-C5F9-478B-9A88-C13538E215C8}.Analyze|x64.ActiveCfg = Release|Win32
-		{B7981F8F-C5F9-478B-9A88-C13538E215C8}.Analyze|x64.Build.0 = Release|Win32
-		{B7981F8F-C5F9-478B-9A88-C13538E215C8}.Analyze|x86.ActiveCfg = Release|Win32
-		{B7981F8F-C5F9-478B-9A88-C13538E215C8}.Analyze|x86.Build.0 = Release|Win32
-		{B7981F8F-C5F9-478B-9A88-C13538E215C8}.Debug|x64.ActiveCfg = Debug|Win32
-		{B7981F8F-C5F9-478B-9A88-C13538E215C8}.Debug|x86.ActiveCfg = Debug|Win32
-		{B7981F8F-C5F9-478B-9A88-C13538E215C8}.Debug|x86.Build.0 = Debug|Win32
-		{B7981F8F-C5F9-478B-9A88-C13538E215C8}.Release|x64.ActiveCfg = Release|Win32
-		{B7981F8F-C5F9-478B-9A88-C13538E215C8}.Release|x86.ActiveCfg = Release|Win32
-		{B7981F8F-C5F9-478B-9A88-C13538E215C8}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

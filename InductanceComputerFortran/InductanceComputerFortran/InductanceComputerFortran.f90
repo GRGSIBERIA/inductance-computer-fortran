@@ -54,6 +54,12 @@ program InductanceComputerFortran
         USE COMFileClass
         implicit none
         integer, parameter :: bodyFD = 20
+        
+        integer, parameter :: coilCount = 1
+        double precision, dimension(1, 3) :: coilPositions, coilForwards, coilRights
+        double precision, dimension(1) :: coilHeight, coilRadius
+        double precision, dimension(3) :: origin, fieldSize, fieldRight, fieldForward
+        
         type(COMFile) body
         
         OPEN (bodyFD, file="E:\\temp\\rhodes\\odb\\abaqus.out", status="old")
@@ -63,6 +69,7 @@ program InductanceComputerFortran
         CLOSE (bodyFD)
     end subroutine
     
+    ! 実験的実装
     subroutine Main()
         USE WiredFluxDensity
         USE FieldFluxDensity
