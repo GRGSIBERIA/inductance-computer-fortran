@@ -60,6 +60,13 @@ program InductanceComputerFortran
         double precision, dimension(1) :: coilHeight, coilRadius
         double precision, dimension(3) :: origin, fieldSize, fieldRight, fieldForward
         
+        !coilPositions = (/ 5.87952, -2.37519e1, -1.39750e2 /)
+        coilPositions = (/ 5.87952, -2.37519e1, -1.39750e2 /)
+        coilForward = (/ 0.0d0, 0.0d0, 1.0d0 /)
+        coilRight = (/ -1.0d0, 0.0d0, 0.0d0 /)
+        coilHeight = (/ 1.0d0 /)
+        coilRadius = (/ 1.0d0 /)
+        
         type(COMFile) body
         
         OPEN (bodyFD, file="E:\\temp\\rhodes\\odb\\abaqus.out", status="old")
