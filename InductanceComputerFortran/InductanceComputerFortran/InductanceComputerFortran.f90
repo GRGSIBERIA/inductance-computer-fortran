@@ -54,20 +54,19 @@ program InductanceComputerFortran
         USE COMFileClass
         implicit none
         integer, parameter :: bodyFD = 20
+        type(COMFile) body
         
         integer, parameter :: coilCount = 1
         double precision, dimension(1, 3) :: coilPositions, coilForwards, coilRights
-        double precision, dimension(1) :: coilHeight, coilRadius
+        double precision, dimension(1) :: coilHeights, coilRadius
         double precision, dimension(3) :: origin, fieldSize, fieldRight, fieldForward
         
-        !coilPositions = (/ 5.87952, -2.37519e1, -1.39750e2 /)
-        coilPositions = (/ 5.87952, -2.37519e1, -1.39750e2 /)
-        coilForward = (/ 0.0d0, 0.0d0, 1.0d0 /)
-        coilRight = (/ -1.0d0, 0.0d0, 0.0d0 /)
-        coilHeight = (/ 1.0d0 /)
+        coilPositions(1,:) = &
+            (/ 6.00000E0, -2.47620E1, -1.39750E2 /) + (/ 6.00000E0, -2.32380E1, -1.39750E2 /) * 0.5d0
+        coilForwards(1,:) = (/ 0.0d0, 0.0d0, 1.0d0 /)
+        coilRights(1,:) = (/ -1.0d0, 0.0d0, 0.0d0 /)
+        coilHeights = (/ 1.0d0 /)
         coilRadius = (/ 1.0d0 /)
-        
-        type(COMFile) body
         
         OPEN (bodyFD, file="E:\\temp\\rhodes\\odb\\abaqus.out", status="old")
         
