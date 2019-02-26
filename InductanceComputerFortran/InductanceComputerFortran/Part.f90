@@ -3,7 +3,8 @@
     
     type Part
         integer nodeCount
-        double precision, dimension(:,:,:), allocatable :: position  ! 時間, 節点, XYZ
+        integer, dimension(:), allocatable :: nodeIds               ! ノード番号の配列
+        double precision, dimension(:,:,:), allocatable :: position ! 時間, 節点, XYZ
     contains
     end type
     
@@ -18,18 +19,20 @@
         type(Part) init_Part
         
         character*256 token
-        integer timeId, nodeId
+        integer timeId, nodeId, number
         
         READ (comfd, *) token               ! パート
         READ (comfd, *) init_Part%nodeCount ! パートの節点数 * 3
         init_Part%nodeCount = init_Part%nodeCount / 3   ! 割って正規の節点数に変える
         
         ALLOCATE (init_Part%position(timeCount, init_Part%nodeCount, 3))
+        ALLOCATE (init_part%nodeIds(init_part%nodeCount))
         
         DO timeId = 1, timeCount
             READ (comfd, *) token   ! *TimeSep
             DO nodeId = 1, init_Part%nodeCount
-                READ (comfd, *) init_Part%position(timeCount, init_Part%nodeCount, :)
+                READ (comfd, *) number, init_Part%position(timeCount, init_Part%nodeCount, :)
+                init_Part%nodeIds(nodeId) = number
             END DO
         END DO
     end function

@@ -33,15 +33,22 @@ program InductanceComputerFortran
     end subroutine
     
     !> コマンドライン引数あり
+    !! icf <body path> <coil path> <forward node number> <right node number>
+    !!  body path           : 強磁性体の出力データ
+    !!  coil path           : コイルの出力データ
+    !!  forward node number : コイルの正面にあたる節点番号
+    !!  right node number   : コイルの右手にあたる節点番号
     subroutine MainIncludeCommandLine()
         USE CommandLine
         USE COMFileClass
         USE COMLoader
         implicit none
         integer, parameter :: bodyFD = 20
+        integer, parameter :: coilFD = 21
+        integer :: coilForwardId, coilRightId
         type(COMFile) body
         
-        CALL GetCommandLine(bodyFD)
+        CALL GetCommandLine(bodyFD, coilFD, coilForwardId, coilRightId)
         
         body = ReadCOM(bodyFD)
         
