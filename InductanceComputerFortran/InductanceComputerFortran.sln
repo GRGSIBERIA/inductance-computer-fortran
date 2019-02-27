@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.28307.168
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{6989167D-11E4-40FE-8C1A-2192A86A7E90}") = "InductanceComputerFortran", "InductanceComputerFortran\InductanceComputerFortran.vfproj", "{20F885E3-6BB9-4B30-BC61-F4DB05E48D48}"
 EndProject
+Project("{6989167D-11E4-40FE-8C1A-2192A86A7E90}") = "AbaqusFileLoader", "AbaqusFileLoader\AbaqusFileLoader.vfproj", "{BB253A16-3000-4506-90CE-DE89EC9C72F5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Analyze|x64 = Analyze|x64
@@ -26,6 +28,16 @@ Global
 		{20F885E3-6BB9-4B30-BC61-F4DB05E48D48}.Release|x64.Build.0 = Release|Win32
 		{20F885E3-6BB9-4B30-BC61-F4DB05E48D48}.Release|x86.ActiveCfg = Release|Win32
 		{20F885E3-6BB9-4B30-BC61-F4DB05E48D48}.Release|x86.Build.0 = Release|Win32
+		{BB253A16-3000-4506-90CE-DE89EC9C72F5}.Analyze|x64.ActiveCfg = Release|Win32
+		{BB253A16-3000-4506-90CE-DE89EC9C72F5}.Analyze|x64.Build.0 = Release|Win32
+		{BB253A16-3000-4506-90CE-DE89EC9C72F5}.Analyze|x86.ActiveCfg = Release|Win32
+		{BB253A16-3000-4506-90CE-DE89EC9C72F5}.Analyze|x86.Build.0 = Release|Win32
+		{BB253A16-3000-4506-90CE-DE89EC9C72F5}.Debug|x64.ActiveCfg = Debug|Win32
+		{BB253A16-3000-4506-90CE-DE89EC9C72F5}.Debug|x86.ActiveCfg = Debug|Win32
+		{BB253A16-3000-4506-90CE-DE89EC9C72F5}.Debug|x86.Build.0 = Debug|Win32
+		{BB253A16-3000-4506-90CE-DE89EC9C72F5}.Release|x64.ActiveCfg = Release|Win32
+		{BB253A16-3000-4506-90CE-DE89EC9C72F5}.Release|x86.ActiveCfg = Release|Win32
+		{BB253A16-3000-4506-90CE-DE89EC9C72F5}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
