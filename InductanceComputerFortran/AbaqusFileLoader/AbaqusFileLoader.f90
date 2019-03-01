@@ -1,25 +1,31 @@
-!  AbaqusFileLoader.f90 
+ï»¿!  AbaqusFileLoader.f90 
 !
-!  ŠÖ”:
-!  AbaqusFileLoader - ƒRƒ“ƒ\[ƒ‹EƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÌƒGƒ“ƒgƒŠ[ƒ|ƒCƒ“ƒgB
+!  é–¢æ•°:
+!  AbaqusFileLoader - ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ãƒ»ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®ã‚¨ãƒ³ãƒˆãƒªãƒ¼ãƒã‚¤ãƒ³ãƒˆã€‚
 !
 
 !****************************************************************************
 !
-!  ƒvƒƒOƒ‰ƒ€: AbaqusFileLoader
+!  ãƒ—ãƒ­ã‚°ãƒ©ãƒ : AbaqusFileLoader
 !
-!  –Ú“I:  ƒRƒ“ƒ\[ƒ‹EƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÌƒGƒ“ƒgƒŠ[ƒ|ƒCƒ“ƒgB
+!  ç›®çš„:  ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ãƒ»ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®ã‚¨ãƒ³ãƒˆãƒªãƒ¼ãƒã‚¤ãƒ³ãƒˆã€‚
 !
 !****************************************************************************
 
     program AbaqusFileLoader
-
+    use YAML
     implicit none
 
-    ! •Ï”
-
-    ! AbaqusFileLoader ‚Ì–{•¶
-    print *, 'Hello World'
+    integer, parameter :: yamlFD = 20, inpFD = 21, outFD = 22
+    integer, dimension(:), allocatable :: xyFDs
+    integer i, numofXYs
+    
+    ! ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‰ã˜ã‚‹
+    CLOSE (inpFD)
+    CLOSE (outFD)
+    DO i = 1, numofXYs
+        CLOSE (xyFDs(i))
+    END DO
 
     end program AbaqusFileLoader
 
