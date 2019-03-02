@@ -1,25 +1,55 @@
-!  ComputeInductance.f90 
+ï»¿!  ComputeInductance.f90 
 !
-!  ŠÖ”:
-!  ComputeInductance - ƒRƒ“ƒ\[ƒ‹EƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÌƒGƒ“ƒgƒŠ[ƒ|ƒCƒ“ƒgB
+!  é–¢æ•°:
+!  ComputeInductance - ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ãƒ»ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®ã‚¨ãƒ³ãƒˆãƒªãƒ¼ãƒã‚¤ãƒ³ãƒˆã€‚
 !
 
 !****************************************************************************
 !
-!  ƒvƒƒOƒ‰ƒ€: ComputeInductance
+!  ãƒ—ãƒ­ã‚°ãƒ©ãƒ : ComputeInductance
 !
-!  –Ú“I:  ƒRƒ“ƒ\[ƒ‹EƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÌƒGƒ“ƒgƒŠ[ƒ|ƒCƒ“ƒgB
+!  ç›®çš„:  ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ãƒ»ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®ã‚¨ãƒ³ãƒˆãƒªãƒ¼ãƒã‚¤ãƒ³ãƒˆã€‚
 !
 !****************************************************************************
 
     program ComputeInductance
 
+    use Config
+    use Report
+    use InputFile
+    use AssemblyClass
     implicit none
 
-    ! •Ï”
-
-    ! ComputeInductance ‚Ì–{•¶
-    print *, 'Hello World'
-
+    integer, parameter :: confFD = 20
+    integer, parameter :: inpFD = 21
+    integer, parameter :: outFD = 22
+    integer, parameter :: startFD = 30      ! xyãƒ•ã‚¡ã‚¤ãƒ«ã¯30ç•ªã‹ã‚‰
+    integer, dimension(:), allocatable :: xyFDs
+    
+    type(Assembly) asm
+    integer i, numofXYs, numofNodes
+    character*64 targetPart
+    targetPart = "geometory"
+    
+    ! ã‚³ãƒ³ãƒ•ã‚£ã‚°ã®èª­ã¿è¾¼ã¿
+    CALL LoadConfig(confFD, inpFD, numofXYs, startFD, xyFDs, outFD)
+    asm = LoadInput(inpFD, targetPart)
+    
+    ! XYãƒ•ã‚¡ã‚¤ãƒ«ã®èª­ã¿è¾¼ã¿
+    DO i = 1, numofXYs
+        CALL LoadReport(xyFDs(i))
+    END DO
+    
+    
+    PRINT *, numofXYs
+    
+    ! ãƒ•ã‚¡ã‚¤ãƒ«ã¨ãƒªã‚½ãƒ¼ã‚¹ã®è§£æ”¾
+    CLOSE (inpFD)
+    CLOSE (outFD)
+    DO i = 1, numofXYs
+        CLOSE (xyFDs(i))
+    END DO
+    DEALLOCATE (xyFDs)
+    
     end program ComputeInductance
 
