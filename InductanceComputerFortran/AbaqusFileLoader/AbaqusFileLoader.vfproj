@@ -26,6 +26,7 @@
 	<Files>
 		<Filter Name="ソースファイル" Filter="f90;for;f;fpp;ftn;def;odl;idl">
 		<File RelativePath=".\AbaqusFileLoader.f90"/>
+		<File RelativePath=".\Assembly.f90"/>
 		<File RelativePath=".\InputFile.f90"/>
 		<File RelativePath=".\LoadConfig.f90"/></Filter>
 		<Filter Name="ヘッダーファイル" Filter="fi;fd"/>
