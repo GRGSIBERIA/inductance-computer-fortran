@@ -26,7 +26,8 @@
 	<Files>
 		<Filter Name="ソースファイル" Filter="f90;for;f;fpp;ftn;def;odl;idl">
 		<File RelativePath=".\AbaqusFileLoader.f90"/>
-		<File RelativePath=".\LoadYAML.f90"/></Filter>
+		<File RelativePath=".\InputFile.f90"/>
+		<File RelativePath=".\LoadConfig.f90"/></Filter>
 		<Filter Name="ヘッダーファイル" Filter="fi;fd"/>
 		<Filter Name="リソースファイル" Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"/>
 		<File RelativePath=".\ReadMe.txt"/></Files>

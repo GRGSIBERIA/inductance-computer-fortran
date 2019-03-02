@@ -13,19 +13,33 @@
 !****************************************************************************
 
     program AbaqusFileLoader
-    use YAML
+    use Config
+    use InputFile
     implicit none
 
-    integer, parameter :: yamlFD = 20, inpFD = 21, outFD = 22
+    integer, parameter :: confFD = 20
+    integer, parameter :: inpFD = 21
+    integer, parameter :: outFD = 22
+    integer, parameter :: startFD = 30      ! xyファイルは30番から
     integer, dimension(:), allocatable :: xyFDs
-    integer i, numofXYs
     
-    ! ファイルを閉じる
+    integer i, numofXYs, numofNodes
+    character*64 targetPart
+    targetPart = "geometory"
+    
+    
+    CALL LoadConfig(confFD, inpFD, numofXYs, startFD, xyFDs, outFD)
+    CALL LoadInput(inpFD, targetPart, numofNodes)
+    
+    PRINT *, numofXYs
+    
+    ! ファイルとリソースの解放
     CLOSE (inpFD)
     CLOSE (outFD)
     DO i = 1, numofXYs
         CLOSE (xyFDs(i))
     END DO
+    DEALLOCATE (xyFDs)
 
     end program AbaqusFileLoader
 
