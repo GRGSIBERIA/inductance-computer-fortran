@@ -2,6 +2,7 @@
     implicit none
     
     ! XYデータの集合
+    public
     type XYData
         real, dimension(:), allocatable :: times                ! 時間
         integer, dimension(:), allocatable :: nodeIds           ! ノード番号

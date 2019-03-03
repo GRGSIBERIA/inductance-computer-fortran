@@ -182,13 +182,13 @@
     end subroutine
     
     ! レポートファイルを読み込む手続き
-    subroutine LoadReport(xyFD)
+    type(XYData) function LoadReport(xyFD) result(xydata)
         implicit none
         integer, intent(in) :: xyFD
         
         integer nodeNumber, axisNumber
         integer numofTimes, numofData
-        type(XYData) :: xydata
+        
         
         ! データの準備
         numofTimes = ReadNumberOfTimes(xyFD)
@@ -198,6 +198,6 @@
         CALL ReadTimeData(xyFD, numofTimes, xydata%times)
         CALL ReadNodeIds(xyFD, numofTimes, numofData, xydata%nodeIds)
         CALL ReadDisplaces(xyFD, numofTimes, numofData, xydata%unsortDisplaces)
-    end subroutine
+    end function
     
     end module

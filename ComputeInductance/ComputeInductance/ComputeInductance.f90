@@ -21,36 +21,44 @@
     use XYDataClass
     implicit none
 
-    integer, parameter :: confFD = 20
-    integer, parameter :: inpFD = 21
-    integer, parameter :: outFD = 22
-    integer, parameter :: startFD = 30      ! xyファイルは30番から
-    integer, dimension(:), allocatable :: xyFDs
+    CALL Main()
     
-    type(Assembly) asm
-    integer i, numofXYs, numofNodes
-    character*64 targetPart
-    targetPart = "geometory"
+    contains
+    subroutine Main()
+        integer, parameter :: confFD = 20
+        integer, parameter :: inpFD = 21
+        integer, parameter :: outFD = 22
+        integer, parameter :: startFD = 30      ! xyファイルは30番から
+        integer, dimension(:), allocatable :: xyFDs
     
-    ! コンフィグの読み込み
-    CALL LoadConfig(confFD, inpFD, numofXYs, startFD, xyFDs, outFD)
-    asm = LoadInput(inpFD, targetPart)
+        type(Assembly) asm
+        type(XYData), dimension(:), allocatable :: xydata
     
-    ! XYファイルの読み込み
-    DO i = 1, numofXYs
-        CALL LoadReport(xyFDs(i))
-    END DO
+        integer i, numofXYs, numofNodes
+        character*64 targetPart
     
+        targetPart = "geometory"
     
-    PRINT *, numofXYs
+        ! コンフィグの読み込み
+        CALL LoadConfig(confFD, inpFD, numofXYs, startFD, xyFDs, outFD)
+        asm = LoadInput(inpFD, targetPart)
+        ALLOCATE (xydata(numofXYs))
     
-    ! ファイルとリソースの解放
-    CLOSE (inpFD)
-    CLOSE (outFD)
-    DO i = 1, numofXYs
-        CLOSE (xyFDs(i))
-    END DO
-    DEALLOCATE (xyFDs)
+        ! XYファイルの読み込み
+        PRINT *, "Number of XY data: ", numofXYs
+        DO i = 1, numofXYs
+            PRINT *, "------------------------------------------------"
+            xydata(i) = LoadReport(xyFDs(i))
+        END DO
+    
+        ! ファイルとリソースの解放
+        CLOSE (inpFD)
+        CLOSE (outFD)
+        DO i = 1, numofXYs
+            CLOSE (xyFDs(i))
+        END DO
+        DEALLOCATE (xyFDs)
+    end subroutine
     
     end program ComputeInductance
 
