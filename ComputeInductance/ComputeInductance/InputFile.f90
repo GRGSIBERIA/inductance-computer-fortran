@@ -77,7 +77,7 @@
             READ (sectionC, *) assembly%positions(countNodes, 3)
             
         END DO
-2400    continue        
+2400    continue
         
     end function
     

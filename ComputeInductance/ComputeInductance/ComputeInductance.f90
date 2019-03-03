@@ -18,6 +18,7 @@
     use Report
     use InputFile
     use AssemblyClass
+    use XYDataClass
     implicit none
 
     integer, parameter :: confFD = 20

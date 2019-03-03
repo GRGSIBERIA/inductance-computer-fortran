@@ -3,8 +3,10 @@
     
     ! XYデータの集合
     type XYData
-        real, dimension(:), allocatable :: times
-        real, dimension(:,:,:), allocatable :: displace ! 3次元で固定
+        real, dimension(:), allocatable :: times                ! 時間
+        integer, dimension(:), allocatable :: nodeIds           ! ノード番号
+        real, dimension(:,:,:), allocatable :: displaces        ! 3次元の位置
+        real, dimension(:,:,:), allocatable :: unsortDisplaces  ! 未整理の位置
     end type
     
     ! コンストラクタ宣言
@@ -19,7 +21,14 @@
         integer, intent(in) :: numofTimes, numofData
         
         ALLOCATE (this%times(numofTimes))
-        ALLOCATE (this%displace(numofTimes, numofData, 3))
+        ALLOCATE (this%nodeIds(numofData))
+        ALLOCATE (this%displaces(numofTimes, numofData / 3, 3)) ! numofDataはデータの総数なので，XYZで分けると3で割らないといけない
+        ALLOCATE (this%unsortDisplaces(numofTimes, numofData, 3))
+        
+        this%nodeIds = 0
+        this%unsortDisplaces = 0
+        this%displaces = 0
+        
     end function
     
     end module
