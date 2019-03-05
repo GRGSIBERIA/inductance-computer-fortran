@@ -8,6 +8,7 @@
         implicit none
         real, intent(in) :: dr, dt, r, t, sigma
         real, dimension(3), intent(in) :: wirePosition, coilPosition, coilForward, coilRight
+        
         real DoubleQuad, cosv, sinv, Qr, Rr, Pr, Ar, fracUp, fracDown
         real, dimension(3) :: Qi, Ri, Pi, Ai, Bi, fracDown_vec
         
@@ -40,16 +41,18 @@
         real, dimension(3), intent(in) :: wirePosition, coilPosition, coilForward, coilRight
         real, intent(in) :: coilHeight, coilRadius, sigma
         integer, intent(in) :: numofDTheta, numofDRadius
+        
         real wire, dTheta, dRadius
         real, dimension(3) :: movingUnitVector
         integer ntheta, nradius
         real, dimension(numofDTheta, numofDRadius) :: densityMap
+        
         real, parameter :: PI = ACOS(-1.0)      ! これでPIが出る
         
         ! 単位ベクトルを作る
         movingUnitVector = coilForward * coilHeight * 0.5
         dTheta = 2.0 * PI / numofDTheta
-        dRadius = coilRadius_numofDRadius
+        dRadius = coilRadius / numofDRadius
         
         ! コイル上面と底面の差を積分する
         DO ntheta = 1, numofDTheta
@@ -62,9 +65,35 @@
             END DO
         END DO
         
-        WiredFluxDensity = SUM(densityMap)
+        wire = SUM(densityMap)
     end function
     
-    function flux_densities
+    function CalculateWiredFluxDensities(&
+        numofWires, wirePositions, numofCoils, coilPositions, coilForwards, coilRights, coilHeights, coilRadius, sigma, numofDTheta, numofDRadius) result(fluxes)
+        implicit none
+        integer, intent(in) :: numofWires, numofCoils, numofDTheta, numofDRadius
+        real, dimension(numofCoils), intent(in) :: coilHeights, coilRadius
+        real, dimension(numofWires, 3), intent(in) :: wirePositions
+        real, dimension(numofCoils, 3), intent(in) :: coilPositions, coilForwards, coilRights
+        real, intent(in) :: sigma
+        real, dimension(numofWires) :: fluxes
+        integer wi, ci
+        
+        fluxes = 0
+        
+        ! ワイヤごとにコイルによって誘導された磁束密度を求める
+        DO wi = 1, numofWires
+            DO ci = 1, numofCoils
+                fluxes(wi) = fluxes(wi) + &
+                    WiredFluxdensity(wirePositions(wi, :), &
+                    coilPositions(ci, :), coilForwards(ci, :), coilRights(ci, :), coilHeights(ci), coilRadius(ci), sigma, &
+                    numofDTheta, numofDRadius)
+            END DO
+        END DO
+        
+    end function
+
+    
+
     
     end module
