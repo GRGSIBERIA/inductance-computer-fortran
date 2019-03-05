@@ -24,6 +24,7 @@
     CALL Main()
     
     contains
+    
     subroutine Main()
         integer, parameter :: confFD = 20
         integer, parameter :: inpFD = 21
@@ -31,7 +32,7 @@
         integer, parameter :: startFD = 30      ! xyファイルは30番から
         integer, dimension(:), allocatable :: xyFDs
     
-        type(Assembly) asm
+        type(Assembly) assembly
         type(XYData), dimension(:), allocatable :: xydata
     
         integer i, numofXYs, numofNodes
@@ -41,15 +42,17 @@
     
         ! コンフィグの読み込み
         CALL LoadConfig(confFD, inpFD, numofXYs, startFD, xyFDs, outFD)
-        asm = LoadInput(inpFD, targetPart)
+        assembly = LoadInput(inpFD, targetPart)
         ALLOCATE (xydata(numofXYs))
     
         ! XYファイルの読み込み
         PRINT *, "Number of XY data: ", numofXYs
         DO i = 1, numofXYs
             PRINT *, "------------------------------------------------"
-            xydata(i) = LoadReport(xyFDs(i))
+            xydata(i) = LoadReport(xyFDs(i), assembly)
+            
         END DO
+        
     
         ! ファイルとリソースの解放
         CLOSE (inpFD)

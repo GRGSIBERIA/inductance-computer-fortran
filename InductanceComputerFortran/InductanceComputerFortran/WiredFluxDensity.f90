@@ -49,7 +49,7 @@ contains
         double precision, dimension(numof_dtheta, numof_dradius) :: density_map
         
         moving_unit_vector = coil_forward * coil_height * 0.5d0
-        delta_theta = 2.0d0 * ACOS(-1.0d0) / numof_dtheta
+        delta_theta = 2.0d0 * ACOS(-1.0d0) / numof_dtheta   ! ACOS(-1) = pi にするテクニック
         delta_radius = coil_radius / numof_dradius
         
         DO ntheta = 1, numof_dtheta

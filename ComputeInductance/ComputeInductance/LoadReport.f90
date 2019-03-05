@@ -1,4 +1,5 @@
 ﻿    module Report
+    use AssemblyClass
     use XYDataClass
     implicit none
     
@@ -157,6 +158,7 @@
     end subroutine
     
     
+    ! 未ソートの座標データをすべて読み込む
     subroutine ReadDisplaces(xyFD, numofTimes, numofData, unsortDisplaces)
         implicit none
         integer, intent(in) :: xyFD, numofTimes, numofData
@@ -181,10 +183,13 @@
         
     end subroutine
     
+    
+    
     ! レポートファイルを読み込む手続き
-    type(XYData) function LoadReport(xyFD) result(xydata)
+    type(XYData) function LoadReport(xyFD, asm) result(xydata)
         implicit none
         integer, intent(in) :: xyFD
+        class(Assembly) :: asm
         
         integer nodeNumber, axisNumber
         integer numofTimes, numofData
@@ -198,6 +203,8 @@
         CALL ReadTimeData(xyFD, numofTimes, xydata%times)
         CALL ReadNodeIds(xyFD, numofTimes, numofData, xydata%nodeIds)
         CALL ReadDisplaces(xyFD, numofTimes, numofData, xydata%unsortDisplaces)
+        
+        CALL ConstructDisplaces(xydata, asm)
     end function
     
     end module
