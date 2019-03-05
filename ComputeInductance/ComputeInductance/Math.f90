@@ -43,4 +43,13 @@
         Length = SQRT(DOT_PRODUCT(V, V))
     end function
     
+    ! ベクトルの正規化
+    function Normalize(V)
+        implicit none
+        real, dimension(3), intent(in) :: V
+        real, dimension(3) :: Normalize
+        
+        Normalize = V / Length(V)
+    end function
+    
     end module
