@@ -48,14 +48,14 @@
 		<Filter Name="ソースファイル" Filter="f90;for;f;fpp;ftn;def;odl;idl">
 		<Filter Name="class">
 		<File RelativePath=".\Assembly.f90"/>
+		<File RelativePath=".\Config.f90"/>
 		<File RelativePath=".\XYData.f90"/></Filter>
-		<Filter Name="loading">
-		<File RelativePath=".\InputFile.f90"/>
-		<File RelativePath=".\LoadConfig.f90"/>
-		<File RelativePath=".\LoadReport.f90"/></Filter>
 		<Filter Name="inductance">
 		<File RelativePath=".\FluxDensity.f90"/>
 		<File RelativePath=".\Math.f90"/></Filter>
+		<Filter Name="loading">
+		<File RelativePath=".\InputFile.f90"/>
+		<File RelativePath=".\LoadReport.f90"/></Filter>
 		<File RelativePath=".\ComputeInductance.f90"/>
 		<File RelativePath=".\Preprocess.f90"/></Filter>
 		<Filter Name="ヘッダーファイル" Filter="fi;fd"/>

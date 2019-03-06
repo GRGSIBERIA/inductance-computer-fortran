@@ -14,7 +14,7 @@
 
     program ComputeInductance
 
-    use Config
+    use ConfigClass
     use Report
     use InputFile
     use AssemblyClass
@@ -26,41 +26,35 @@
     contains
     
     subroutine Main()
-        integer, parameter :: confFD = 20
-        integer, parameter :: inpFD = 21
-        integer, parameter :: outFD = 22
-        integer, parameter :: startFD = 30      ! xyファイルは30番から
         integer, dimension(:), allocatable :: xyFDs
+        integer, dimension(:), allocatable :: coilFDs
     
-        type(Assembly) assembly
+        type(Config) :: config
+        type(Assembly) :: assembly
         type(XYData), dimension(:), allocatable :: xydata
     
-        integer i, numofXYs, numofNodes
+        integer i, numofNodes
+        character*256, parameter :: configPath = "config.conf"
         character*64 targetPart
     
-        targetPart = "geometory"
-    
         ! コンフィグの読み込み
-        CALL LoadConfig(confFD, inpFD, numofXYs, startFD, xyFDs, outFD)
-        assembly = LoadInput(inpFD, targetPart)
-        ALLOCATE (xydata(numofXYs))
+        config = init_Config(20, configPath)
+        ALLOCATE (xydata(SIZE(config%wireFDs)))
     
-        ! XYファイルの読み込み
-        PRINT *, "Number of XY data: ", numofXYs
-        DO i = 1, numofXYs
+        ! ワイヤのXYファイルの読み込み
+        PRINT *, "Number of XY data: ", SIZE(config%wireFDs)
+        DO i = 1, SIZE(config%wireFDs)
             PRINT *, "------------------------------------------------"
-            xydata(i) = LoadReport(xyFDs(i), assembly)
+            xydata(i) = LoadReport(config%wireFDs(i), assembly)
             
         END DO
         
+        ! コイル座標のXYファイルの読み込み
+        ! 座標値の平均から重心を求める
+        ! コイル正面のXYファイルの読み込み
+        ! ベクトルの先端となる節点を指定する
+        ! 正規直交基底を作成する
     
-        ! ファイルとリソースの解放
-        CLOSE (inpFD)
-        CLOSE (outFD)
-        DO i = 1, numofXYs
-            CLOSE (xyFDs(i))
-        END DO
-        DEALLOCATE (xyFDs)
     end subroutine
     
     end program ComputeInductance
