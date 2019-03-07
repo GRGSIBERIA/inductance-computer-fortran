@@ -10,6 +10,7 @@
         integer, dimension(:), allocatable :: dataIds           ! 実際のノード番号
         real, dimension(:,:,:), allocatable :: displaces        ! 3次元の位置
         real, dimension(:,:,:), allocatable :: unsortDisplaces  ! 未整理の位置
+        real, dimension(:,:), allocatable :: centroid
     end type
     
     ! コンストラクタ宣言

@@ -14,9 +14,14 @@
         type Config
             integer numofWires, numofCoils
             integer configFD, inputFD, outputFD
-            integer, dimension(:), allocatable :: wireFDs, coilFDs, coilVecFDs
+            integer, dimension(:), allocatable :: wireFDs, coilFDs
             
-            character*64 targetPart
+            character*64 wirePart
+            character*64 coilPart
+            
+            integer, dimension(:), allocatable :: coilVectorFrontIds, coilVectorBackIds
+            real, dimension(:), allocatable :: coilHeights
+            real, dimension(:), allocatable :: coilRadius
         contains
             procedure :: Release => Config_Release
         end type
@@ -46,14 +51,13 @@
             
             character*16    :: option
             character*256   :: readData
-            integer numofXYs, numofCoils
-            integer FD, xyid, coilid, coilvecid
+            integer FD, xyid, coilid, front, back
+            real height, radius
             
-            numofXYs = 0
-            numofCoils = 0
+            this%numofWires = 0
+            this%numofCoils = 0
             xyid = 1
             coilid = 1
-            coilvecid = 1
             FD = startFD
             
             this%configFD = FD
@@ -65,20 +69,21 @@
                 READ (this%configFD, *, end=100) option, readData
                 
                 IF (INDEX(option, "wirefile") > 0) THEN
-                    numofXYs = numofXYs + 1
+                    this%numofWires = this%numofWires + 1
                 ELSE IF (INDEX(option, "coilfile") > 0) THEN
-                    numofCoils = numofCoils + 1
+                    this%numofCoils = this%numofCoils + 1
                 END IF
                 
             END DO
 100         continue
             
             ! ファイルの個数が決まったら領域を確保する
-            ALLOCATE (this%wireFDs(numofXYs))
-            ALLOCATE (this%coilFDs(numofCoils))
-            ALLOCATE (this%coilVecFDs(numofCoils))
-            this%numofWires = numofXYs
-            this%numofCoils = numofCoils
+            ALLOCATE (this%wireFDs(this%numofWires))
+            ALLOCATE (this%coilFDs(this%numofCoils))
+            ALLOCATE (this%coilVectorFrontIds(this%numofCoils))
+            ALLOCATE (this%coilVectorBackIds(this%numofCoils))
+            ALLOCATE (this%coilHeights(this%numofCoils))
+            ALLOCATE (this%coilRadius(this%numofCoils))
             REWIND (this%configFD)
             
             ! 各ファイルを開く処理
@@ -87,20 +92,53 @@
                     
                 IF (INDEX(option, "wirefile") > 0) THEN
                     CALL ReadFile(this%wireFDs, xyid, FD, readData)
+                    
+                    READ (this%configFD, *, end=200) option, readData   ! wirefileのあとにwirepartが続く
+                    IF (INDEX(option, "wirepart") <= 0) THEN
+                        PRINT *, "Please continue wirepart after wirefile."
+                        EXIT
+                    END IF
+                    
+                    this%wirePart = readData        ! ファイルのあとに必ずpart名
+                    
                 ELSE IF (INDEX(option, "coilfile") > 0) THEN
                     CALL ReadFile(this%coilFDs, coilid, FD, readData)
-                ELSE IF (INDEX(option, "coilvec") > 0) THEN
-                    CALL ReadFile(this%coilVecFDs, coilvecid, FD, readData)
+                    
+                    READ (this%configFD, *, end=200) option, readData   ! coilfileのあとにcoilpartが続く
+                    IF (INDEX(option, "coilpart") <= 0) THEN
+                        PRINT *, "Please continue coilpart after coilfile."
+                        EXIT
+                    END IF
+                    
+                    this%coilPart = readData
+                    
+                    ! コイルの向きを決めるノードIDを保存する
+                    READ (this%configFD, *, end=200) readData, front, back                ! coilpartのあとにnodeidが続く
+                    IF (INDEX(option, "nodeid") <= 0) THEN
+                        PRINT *, "Please continue nodeid after coilpart."
+                        EXIT
+                    END IF
+                    this%coilVectorFrontIds(coilid-1) = front
+                    this%coilVectorBackIds(coilid-1) = back
+                    
+                    READ (this%configFD, *, end=200) readData, height, radius             ! nodeidのあとにcoildataが続く
+                    IF (INDEX(readData, "coildata") <= 0) THEN
+                        PRINT *, "Please continue coildata after nodeid."
+                        EXIT
+                    END IF
+                    this%coilHeights(coilid-1) = height
+                    this%coilRadius(coilid-1) = radius
+                    
                 ELSE IF (INDEX(option, "inpfile") > 0) THEN
                     this%inputFD = FD
                     OPEN (this%inputFD, file=readData, status="old")
                     FD = FD + 1
+                    
                 ELSE IF (INDEX(option, "outfile") > 0) THEN
                     this%outputFD = FD
                     OPEN (this%outputFD, file=readData, status="replace")
                     FD = FD + 1
-                ELSE IF (INDEX(option, "part") > 0) THEN
-                    this%targetPart = readData
+                    
                 END IF
                 
             END DO
@@ -119,7 +157,6 @@
             END DO
             DO i = 1, SIZE(this%coilFDs)
                 CLOSE (this%coilFDs(i))
-                CLOSE (this%coilVecFDs(i))
             END DO
             CLOSE (this%inputFD)
             CLOSE (this%configFD)
@@ -127,7 +164,10 @@
             
             DEALLOCATE (this%wireFDs)
             DEALLOCATE (this%coilFDs)
-            DEALLOCATE (this%coilVecFDs)
+            DEALLOCATE (this%coilVectorFrontIds)
+            DEALLOCATE (this%coilVectorBackIds)
+            DEALLOCATE (this%coilRadius)
+            DEALLOCATE (this%coilHeights)
         end subroutine
 
     

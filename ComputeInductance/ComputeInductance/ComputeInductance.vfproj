@@ -48,6 +48,7 @@
 		<Filter Name="ソースファイル" Filter="f90;for;f;fpp;ftn;def;odl;idl">
 		<Filter Name="class">
 		<File RelativePath=".\Assembly.f90"/>
+		<File RelativePath=".\Coil.f90"/>
 		<File RelativePath=".\Config.f90"/>
 		<File RelativePath=".\XYData.f90"/></Filter>
 		<Filter Name="inductance">

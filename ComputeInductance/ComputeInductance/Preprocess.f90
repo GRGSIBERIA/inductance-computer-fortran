@@ -37,4 +37,12 @@
         right = Cross(up, forward)
     end subroutine
     
+    subroutine PreprocessForCoilVector(coil, coilVec)
+        use XYDataClass
+        implicit none
+        type(XYData), intent(in) :: coil
+        type(XYData), intent(in) :: coilVec
+        
+    end subroutine
+    
     end module
