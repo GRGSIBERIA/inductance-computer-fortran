@@ -5,12 +5,12 @@
     ! XYデータの集合
     public
     type XYData
+        integer numofNodes
         real, dimension(:), allocatable :: times                ! 時間
         integer, dimension(:), allocatable :: nodeIds           ! ノード番号
         integer, dimension(:), allocatable :: dataIds           ! 実際のノード番号
         real, dimension(:,:,:), allocatable :: displaces        ! 3次元の位置
         real, dimension(:,:,:), allocatable :: unsortDisplaces  ! 未整理の位置
-        real, dimension(:,:), allocatable :: centroid
     end type
     
     ! コンストラクタ宣言
@@ -35,6 +35,7 @@
         this%unsortDisplaces = 0
         this%displaces = 0
         this%dataIds = 0
+        this%numofNodes = numofData / 3
     end function
     
     ! 未ソートの座標データをソートし直す

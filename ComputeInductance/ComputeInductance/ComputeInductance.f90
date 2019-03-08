@@ -13,12 +13,12 @@
 !****************************************************************************
 
     program ComputeInductance
-
     use ConfigClass
     use Report
     use InputFile
     use AssemblyClass
     use XYDataClass
+    use CoilClass
     implicit none
 
     CALL Main()
@@ -26,11 +26,12 @@
     contains
     
     subroutine Main()
+        implicit none
         type(Config) :: config
         type(Assembly) :: assembly
         type(XYData), dimension(:), allocatable :: wires
         type(XYData), dimension(:), allocatable :: coils
-        
+        type(Coil), dimension(:), allocatable :: coilSettings
     
         integer i, numofNodes
         character*256, parameter :: configPath = "config.conf"
@@ -39,7 +40,8 @@
         config = init_Config(20, configPath)
         ALLOCATE (wires(SIZE(config%wireFDs)))
         ALLOCATE (coils(SIZE(config%coilFDs)))
-    
+        ALLOCATE (coilSettings(SIZE(config%coilFDs)))
+        
         ! ワイヤのXYファイル読み込み
         PRINT *, "Number of XY data: ", SIZE(config%wireFDs)
         DO i = 1, SIZE(config%wireFDs)
@@ -51,6 +53,7 @@
         DO i = 1, SIZE(config%coilFDs)
             PRINT *, "------------------------------------------------"
             coils(i) = LoadReport(config%coilFDs(i), assembly)
+            coilSettings(i) = init_Coil(config%coilHeights(i), config%coilRadius(i), config%coilVectorFrontIds(i), config%coilVectorBackIds(i), coils(i))
         END DO
         
         ! コイルの前処理を行う

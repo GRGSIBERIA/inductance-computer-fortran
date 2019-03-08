@@ -17,16 +17,48 @@
     contains
     
     ! コイルのコンストラクタ
-    type(Coil) function init_Coil(height, radius, numofTimes) result(this)
+    type(Coil) function init_Coil(height, radius, frontId, backId, coilXY) result(this)
+        use XYDataClass
+        implicit none
         real, intent(in) :: height, radius
-        integer, intent(in) :: numofTimes
+        integer, intent(in) :: frontId, backId
+        type(XYData), intent(in) :: coilXY
         
+        integer numofTimes, timeid, nodeid
+        integer front, right
+        real, dimension(3) :: center
+        
+        numofTimes = SIZE(coilXY%times)
         this%height = height
         this%radius = radius
         
         ALLOCATE (this%centroid(numofTimes, 3))
         ALLOCATE (this%forward(numofTimes, 3))
         ALLOCATE (this%right(numofTimes, 3))
+        
+        ! 配列を分けているのはベクトル最適化をかけやすくしたい
+        ! 中心座標の入力
+        DO timeid = 1, numofTimes
+            center = 0
+            DO nodeid = 1, coilXY%numofNodes
+                center(:) = center(:) + coilXY%displaces(timeid, nodeid, :)
+            END DO
+            this%centroid(timeid,:) = center
+        END DO
+        
+        ! 正面データの入力
+        DO timeid = 1, numofTimes
+            DO nodeid = 1, coilXY%numofNodes
+                
+            END DO
+        END DO
+        
+        ! 右手データの入力
+        DO timeid = 1, numofTimes
+            DO nodeid = 1, coilXY%numofNodes
+                
+            END DO
+        END DO
     end function
     
     ! FluxDensity系の関数に渡せるような形に直す関数

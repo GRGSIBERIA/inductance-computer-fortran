@@ -96,7 +96,7 @@
                     READ (this%configFD, *, end=200) option, readData   ! wirefileのあとにwirepartが続く
                     IF (INDEX(option, "wirepart") <= 0) THEN
                         PRINT *, "Please continue wirepart after wirefile."
-                        EXIT
+                        STOP
                     END IF
                     
                     this%wirePart = readData        ! ファイルのあとに必ずpart名
@@ -107,24 +107,24 @@
                     READ (this%configFD, *, end=200) option, readData   ! coilfileのあとにcoilpartが続く
                     IF (INDEX(option, "coilpart") <= 0) THEN
                         PRINT *, "Please continue coilpart after coilfile."
-                        EXIT
+                        STOP
                     END IF
                     
                     this%coilPart = readData
                     
                     ! コイルの向きを決めるノードIDを保存する
-                    READ (this%configFD, *, end=200) readData, front, back                ! coilpartのあとにnodeidが続く
+                    READ (this%configFD, *, end=200) option, front, back                ! coilpartのあとにnodeidが続く
                     IF (INDEX(option, "nodeid") <= 0) THEN
                         PRINT *, "Please continue nodeid after coilpart."
-                        EXIT
+                        STOP
                     END IF
                     this%coilVectorFrontIds(coilid-1) = front
                     this%coilVectorBackIds(coilid-1) = back
                     
-                    READ (this%configFD, *, end=200) readData, height, radius             ! nodeidのあとにcoildataが続く
-                    IF (INDEX(readData, "coildata") <= 0) THEN
+                    READ (this%configFD, *, end=200) option, height, radius             ! nodeidのあとにcoildataが続く
+                    IF (INDEX(option, "coildata") <= 0) THEN
                         PRINT *, "Please continue coildata after nodeid."
-                        EXIT
+                        STOP
                     END IF
                     this%coilHeights(coilid-1) = height
                     this%coilRadius(coilid-1) = radius
