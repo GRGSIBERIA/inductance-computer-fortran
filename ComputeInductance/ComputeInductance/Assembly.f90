@@ -19,6 +19,12 @@
     
     contains
     
+    type(Assembly) function LoadInputFile(inputFD) result(this)
+    
+    end function
+    
+    
+    
     ! コンストラクタ
     type(Assembly) function init_Assembly(numofNodes) result(this)
         implicit none

@@ -55,7 +55,6 @@
 		<File RelativePath=".\FluxDensity.f90"/>
 		<File RelativePath=".\Math.f90"/></Filter>
 		<Filter Name="loading">
-		<File RelativePath=".\InputFile.f90"/>
 		<File RelativePath=".\LoadReport.f90"/></Filter>
 		<File RelativePath=".\ComputeInductance.f90"/>
 		<File RelativePath=".\Preprocess.f90"/></Filter>
