@@ -19,8 +19,59 @@
     
     contains
     
-    type(Assembly) function LoadInputFile(inputFD) result(this)
-    
+    type(Assembly) function LoadInputFile(inputFD, part) result(this)
+        implicit none
+        integer, intent(in) :: inputFD
+        character, dimension(:), intent(in) :: part
+        
+        character*64 :: element, name
+        integer numofNodes
+        
+        numofNodes = 0
+        
+        DO
+            READ (inputFD, *) element, name
+            
+            ! 該当パートのノード数を数える
+            IF (INDEX(element, "*Instance") > 0) THEN
+                IF (INDEX(name, part) > 0) THEN     ! 読み取りたいinstanceとnameが見つかった
+                    READ (inputFD, "()")            ! Nodeを読み捨て
+                    
+                    DO
+                        READ (inputFD, *) element
+                        
+                        IF (INDEX(element, "*Element") > 0) THEN
+                            GOTO 100
+                        END IF
+                        
+                        numofNodes = numofNodes + 1
+                    END DO
+                    
+                END IF
+                
+            END IF
+            
+        END DO
+100     continue        
+        
+        REWIND (inputFD)    ! 最初に戻る
+        ALLOCATE (this%nodeIds(numofNodes))
+        ALLOCATE (this%positions(numofNodes, 3))
+        
+        DO
+            READ (inputFD, *) element, name
+            
+            IF (INDEX(element, "*Instance") > 0) THEN
+                IF (INDEX(name, part) > 0) THEN
+                    READ (inputFD, "()")
+                    
+                    
+                END IF
+                
+            END IF
+        END DO
+        
+        
     end function
     
     
