@@ -28,7 +28,7 @@
         implicit none
         type(Config) :: config
         
-        type(Assembly) :: wireAssembly
+        type(Assembly), dimension(:) :: wireAssembly
         type(Assembly), dimension(:), allocatable :: coilAssemblies
         
         type(XYData), dimension(:), allocatable :: wires

@@ -25,7 +25,8 @@
         character, dimension(:), intent(in) :: part
         
         character*64 :: element, name
-        integer numofNodes
+        character*128 :: line
+        integer numofNodes, countNode
         
         numofNodes = 0
         
@@ -58,6 +59,8 @@
         ALLOCATE (this%nodeIds(numofNodes))
         ALLOCATE (this%positions(numofNodes, 3))
         
+        countNode = 1
+        
         DO
             READ (inputFD, *) element, name
             
@@ -65,11 +68,21 @@
                 IF (INDEX(name, part) > 0) THEN
                     READ (inputFD, "()")
                     
-                    
+                    DO
+                        READ (inputFD, *) line
+                        
+                        IF (INDEX(line, "*Element") > 0) THEN
+                            GOTO 200
+                        END IF
+                        
+                        !READ (element, *) this%nodeIds(countNode)
+                        !countNode = countNode + 1
+                    END DO
                 END IF
                 
             END IF
         END DO
+200     continue
         
         
     end function
