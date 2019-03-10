@@ -4,13 +4,25 @@
     type InputFile
         integer, dimension(:), allocatable :: nodeIds
         real, dimension(:,:), allocatable :: positions
+    contains
+        procedure :: PrintInformation => InputFile_PrintInformation
     end type
 
     interface InputFile
         module procedure :: init_InputFile
     end interface
     
-contains
+    contains
+    
+    subroutine InputFile_PrintInformation(this, identifier)
+        class(InputFile) this
+        character(*), intent(in) :: identifier
+        
+        PRINT *, "---------------------------------------------"
+        PRINT *, identifier
+        PRINT *, "Number of Nodes: ", SIZE(this%nodeIds)
+    end subroutine
+    
     type(InputFile) function init_InputFile(inputFD, part) result(this)
         integer, intent(in) :: inputFD
         character(*), intent(in) :: part
