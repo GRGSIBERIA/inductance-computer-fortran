@@ -19,29 +19,29 @@
     contains
     
         subroutine Config_Release(this)
-            type(Config), intent(in) :: this
+            class(Config) :: this
             integer i
             CLOSE (this%configFD)
             CLOSE (this%inputFD)
             CLOSE (this%outputFD)
-            DO i = 1, SIZE(wireFDs)
-                CLOSE (wireFDs(i))
+            DO i = 1, SIZE(this%wireFDs)
+                CLOSE (this%wireFDs(i))
             END DO
-            DO i = 1, numofCoils
-                CLOSE (topFDs(i))
-                CLOSE (bottomFDs(i))
+            DO i = 1, this%numofCoils
+                CLOSE (this%topFDs(i))
+                CLOSE (this%bottomFDs(i))
             END DO
-            DEALLOCATE (topFDs)
-            DEALLOCATE (bottomFDs)
-            DEALLOCATE (wireFDs)
-            DEALLOCATE (wirePartNames)
-            DEALLOCATE (coilPartNames)
+            DEALLOCATE (this%topFDs)
+            DEALLOCATE (this%bottomFDs)
+            DEALLOCATE (this%wireFDs)
+            DEALLOCATE (this%wirePartNames)
+            DEALLOCATE (this%coilPartNames)
         end subroutine
     
         type(Config) function init_Config(startFD, configPath) result(this)
             implicit none
             character(*), intent(in) :: configPath
-            integer :: startFD
+            integer startFD
             
             character*32    option, partname
             character*256   param, topfile, bottomfile
@@ -66,7 +66,7 @@
                     numofWires = numofWires + 1
                 elseif (INDEX(option, "coilfile") > 0) then
                     numofCoils = numofCoils + 1
-                elseif (INDEX(option, "inputfile") > 0) then
+                elseif (INDEX(option, "inpfile") > 0) then
                     numofInputs = numofInputs + 1
                 end if
             end do
@@ -91,7 +91,6 @@
             
             ! ファイルパスを読み込んでコンフィグに記帳する
             
-            ! Coil上面と下面でファイルを分けてもらう方針しかないだろう
             ! wirefile, part名, XYデータ
             ! coilfile, part名, 上面XYデータ, 下面XYデータ
             
@@ -103,6 +102,10 @@
             
             do
                 READ (this%configFD, "(A)", end=200) line
+                
+                if (LEN_TRIM(line) < 1) then
+                    goto 200    ! 空白行があるときはファイルの末尾に移動したと判断する
+                end if
                 
                 READ (line, *) option, also
                 
@@ -124,7 +127,7 @@
                     coilCount = coilCount + 1
                     startFD = startFD + 2
                     
-                elseif(INDEX(option, "inputfile") > 0) then ! 入力ファイルの読み込み
+                elseif(INDEX(option, "inpfile") > 0) then ! 入力ファイルの読み込み
                     READ (line, *) option, param
                     OPEN (startFD, file=param, status="old")
                     this%inputFD = startFD
