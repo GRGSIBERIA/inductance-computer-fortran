@@ -5,8 +5,11 @@
             integer :: numofCoils
             integer :: configFD
             integer :: inputFD
-            integer, dimension(:), allocatable :: wireFDs
-            integer, dimension(:), allocatable :: topFDs, bottomFDs
+            integer :: outputFD
+            integer, dimension(:), allocatable :: wireFDs, topFDs, bottomFDs
+            character*32, dimension(:), allocatable :: wirePartNames, coilPartNames
+        contains
+            procedure :: Release => Config_Release
         end type
         
         interface Config
@@ -15,11 +18,32 @@
         
     contains
     
+        subroutine Config_Release(this)
+            type(Config), intent(in) :: this
+            integer i
+            CLOSE (this%configFD)
+            CLOSE (this%inputFD)
+            CLOSE (this%outputFD)
+            DO i = 1, SIZE(wireFDs)
+                CLOSE (wireFDs(i))
+            END DO
+            DO i = 1, numofCoils
+                CLOSE (topFDs(i))
+                CLOSE (bottomFDs(i))
+            END DO
+            DEALLOCATE (topFDs)
+            DEALLOCATE (bottomFDs)
+            DEALLOCATE (wireFDs)
+            DEALLOCATE (wirePartNames)
+            DEALLOCATE (coilPartNames)
+        end subroutine
+    
         type(Config) function init_Config(startFD, configPath) result(this)
+            implicit none
             character(*), intent(in) :: configPath
             integer :: startFD
             
-            character*32    option
+            character*32    option, partname
             character*256   param, topfile, bottomfile
             character*1024  line, also
             integer wireCount, coilCount, inputCount
@@ -62,11 +86,14 @@
             ALLOCATE (this%wireFDs(numofWires))
             ALLOCATE (this%topFDs(numofCoils))
             ALLOCATE (this%bottomFDs(numofCoils))
+            ALLOCATE (this%wirePartNames(numofWires))
+            ALLOCATE (this%coilPartNames(numofCoils))
             
             ! ファイルパスを読み込んでコンフィグに記帳する
             
-            ! Coil上面と下面でファイルを分けてもらう方針しかないだろう^
-            ! coilfile, 上面XYデータ, 下面XYデータ
+            ! Coil上面と下面でファイルを分けてもらう方針しかないだろう
+            ! wirefile, part名, XYデータ
+            ! coilfile, part名, 上面XYデータ, 下面XYデータ
             
             REWIND (this%configFD)
             
@@ -80,16 +107,18 @@
                 READ (line, *) option, also
                 
                 if (INDEX(option, "wirefile") > 0) then     ! ワイヤの読み込み
-                    READ (line, *) option, param
+                    READ (line, *) option, partname, param
                     OPEN (startFD, file=param, status="old")
                     this%wireFDs(wireCount) = startFD
+                    this%wirePartNames(wireCount) = partname
                     wireCount = wireCount + 1
                     startFD = startFD + 1
                     
                 elseif(INDEX(option, "coilfile") > 0) then  ! 上面，下面の順番で記帳
-                    READ (line, *) option, topfile, bottomfile
+                    READ (line, *) option, partname, topfile, bottomfile
                     OPEN (startFD, file=topfile, status="old")
                     OPEN (startFD+1, file=bottomfile, status="old")
+                    this%coilPartNames(coilCount) = partname
                     this%topFDs(coilCount) = startFD
                     this%bottomFDs(coilCount) = startFD + 1
                     coilCount = coilCount + 1
@@ -99,6 +128,12 @@
                     READ (line, *) option, param
                     OPEN (startFD, file=param, status="old")
                     this%inputFD = startFD
+                    startFD = startFD + 1
+                
+                elseif(INDEX(option, "outputfile") > 0) then ! 出力ファイルを開く
+                    READ (line, *) option, param
+                    OPEN (startFD, file=param, status="replace")
+                    this%outputFD = startFD
                     startFD = startFD + 1
                 end if
                 

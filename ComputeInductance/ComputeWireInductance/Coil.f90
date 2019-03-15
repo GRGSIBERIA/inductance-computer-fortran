@@ -1,8 +1,8 @@
 ﻿    module CoilClass
+    implicit none
     
     type Coil
-        real :: height, radius, gamma
-        integer :: forwardNodeId, backwardNodeId
+        
     end type
     
     interface Coil
