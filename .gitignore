@@ -402,3 +402,4 @@ InductanceComputerFortran/InductanceComputerFortran/My Advisor Results - Inducta
 ComputeInductance/output.xls
 ComputeInductance/stepcounter-3.0.4-jar-with-dependencies.jar
 stepcounter-3.0.4-jar-with-dependencies.jar
+*.db3

@@ -37,6 +37,8 @@
         moveTo = 0
         moveToFlag = 0
         
+        REWIND (inputFD)
+        
         ! 頭の部分をスキップ
         do
             READ (inputFD, "(A)", end=100) line

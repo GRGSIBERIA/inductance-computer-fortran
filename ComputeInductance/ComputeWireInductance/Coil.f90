@@ -7,7 +7,7 @@
         real :: radius, height
         type(InputFile) :: input
         type(ReportFile) :: top, bottom
-        real, dimension(3) :: topCenter, bottomCenter, center
+        real, dimension(:,:), allocatable :: forward, right
     end type
     
     interface Coil
@@ -68,9 +68,12 @@
     ! コンストラクタ
     type(Coil) function init_Coil(conf, coilCount) result(this)
         use ConfigClass
+        use Math
         implicit none
         type(Config), intent(in) :: conf
         integer, intent(in) :: coilCount
+        real, dimension(3) :: topCenter, bottomCenter, center, unit
+        integer timeid
         
         ! ファイルの読み込み
         this%input = init_InputFile(conf%inputFD, conf%coilPartNames(coilCount))
@@ -78,11 +81,32 @@
         this%bottom = init_ReportFile(conf%bottomFDs(coilCount), this%input)
         
         ! 半径，高さなどを計算する
-        this%topCenter = Coil_CenterPosition(SIZE(this%top%nodeIds), this%top%positions(1,:,:))
-        this%bottomCenter = Coil_CenterPosition(SIZE(this%bottom%nodeIds), this%bottom%positions(1,:,:))
-        this%center = (this%topCenter - this%bottomCenter) * 0.5 + this%bottomCenter
-        this%height = Coil_Height(this%topCenter, this%bottomCenter)
-        this%radius = Coil_Radius(SIZE(this%top%nodeIds), this%top%positions(1,:,:), this%topCenter)
+        topCenter = Coil_CenterPosition(SIZE(this%top%nodeIds), this%top%positions(1,:,:))
+        bottomCenter = Coil_CenterPosition(SIZE(this%bottom%nodeIds), this%bottom%positions(1,:,:))
+        center = (topCenter - bottomCenter) * 0.5 + bottomCenter
+        this%height = Coil_Height(topCenter, bottomCenter)
+        this%radius = Coil_Radius(SIZE(this%top%nodeIds), this%top%positions(1,:,:), topCenter)
+        
+        ! 時間ごとの向きを計算する
+        ALLOCATE (this%forward(SIZE(this%top%times), 3))
+        ALLOCATE (this%right(SIZE(this%top%times), 3))
+        
+        ! 正面を計算する
+        do timeid = 1, SIZE(this%top%times)
+            topCenter = Coil_CenterPosition(SIZE(this%top%nodeIds), this%top%positions(timeid,:,:))
+            bottomCenter = Coil_CenterPosition(SIZE(this%bottom%nodeIds), this%bottom%positions(timeid,:,:))
+            center = topCenter - bottomCenter
+            this%forward(timeid,:) = center / SQRT(DOT_PRODUCT(center, center)) ! 単位ベクトル化
+        end do
+        
+        ! 右手を計算する
+        unit = (/ 1, 1, 1 /)
+        unit = unit / SQRT(DOT_PRODUCT(unit, unit))
+        do timeid = 1, SIZE(this%top%times)
+            this%right(timeid,:) = cross(this%forward(timeid, :), unit)
+        end do
+        
+        
     end function
     
     end module
