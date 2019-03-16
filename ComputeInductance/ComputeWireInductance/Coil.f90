@@ -18,11 +18,13 @@
     
     ! 中心座標を計算する関数
     function Coil_CenterPosition(size, positions) result(center)
+        implicit none
         integer, intent(in) :: size
         real, dimension(size,3), intent(in) :: positions
         real, dimension(3) :: center
         integer i
         
+        center = 0
         do i = 1, size
             center = center + positions(i,:)
         end do
@@ -31,29 +33,35 @@
     
     ! 高さを計算する関数
     real function Coil_Height(top, bottom) result(h)
+        implicit none
         real, dimension(3), intent(in) :: top, bottom
+        real, dimension(3) :: temp
         
-        h = SQRT(DOT_PRODUCT(top - bottom))
+        temp = top - bottom
+        h = SQRT(DOT_PRODUCT(temp, temp))
     end function
     
     ! 半径を計算する関数
     real function Coil_Radius(size, positions, center) result(r)
+        implicit none
         integer, intent(in) :: size
         real, dimension(size,3), intent(in) :: positions
         real, dimension(3), intent(in) :: center
+        real, dimension(3) :: dot
         real max, tmp
         integer i
         
         ! 中心から一番外側の節点までの距離を半径とする
         max = 0
         do i = 1, size
-            tmp = SQRT(DOT_PRODUCT(positions(i,:) - center))
+            dot = positions(i,:) - center
+            tmp = DOT_PRODUCT(dot, dot)
             if (tmp > max) then
                 max = tmp
             end if
         end do
         
-        r = max
+        r = SQRT(max)
         
     end function
     

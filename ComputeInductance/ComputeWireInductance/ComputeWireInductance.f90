@@ -23,19 +23,22 @@
     ! メイン関数
     subroutine Main()
         use ConfigClass
-        use InputFileClass
-        use ReportFileClass
+        use CoilClass
         
         implicit none
-        integer startFD
+        integer startFD, i
         type(Config) configFile
-        type(InputFile) input
-        type(ReportFile) report
+        type(Coil), dimension(:), allocatable :: coils
+        
         
         startFD = 20
         
         configFile = init_Config(startFD, "config.conf")
+        ALLOCATE (coils(configFile%numofCoils))
         
+        do i = 1, configFile%numofCoils
+            coils = init_Coil(configFile, i)
+        end do
         
         !open(inputFD, file="E:\\temp\\rhodes\\odb\\C3-17-Gapped-Detail-C2600.inp", status="old")
         !open(reportFD, file="E:\\temp\\rhodes\\odb\\coil.rpt", status="old")
