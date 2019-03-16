@@ -169,8 +169,6 @@
             end if
         end do
         
-        PRINT *, "complete loading report file"
-                
     end function
     
     end module

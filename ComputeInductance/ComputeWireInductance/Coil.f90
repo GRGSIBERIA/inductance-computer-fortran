@@ -89,6 +89,9 @@
         this%height = Coil_Height(topCenter, bottomCenter)
         this%radius = Coil_Radius(SIZE(this%top%nodeIds), this%top%positions(1,:,:), topCenter)
         
+        PRINT *, "radius:", this%radius
+        PRINT *, "height:", this%height
+        
         ! 時間ごとの向きを計算する
         ALLOCATE (this%forward(SIZE(this%top%times), 3))
         ALLOCATE (this%right(SIZE(this%top%times), 3))
