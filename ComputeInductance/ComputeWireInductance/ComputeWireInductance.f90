@@ -34,17 +34,26 @@
         
         startFD = 20
         
+        PRINT *, "start loading configuration"
+        
         conf = init_Config(startFD, "config.conf")
         ALLOCATE (coils(conf%numofCoils))
         ALLOCATE (wires(SIZE(conf%wireFDs)))
         
+        PRINT *, "loaded config.conf"
+        
         do i = 1, SIZE(conf%wireFDs)
+            PRINT *, "loading wire", i
             wires(i) = init_Wire(conf, i)
         end do
         
         do i = 1, conf%numofCoils
+            PRINT *, "loading coil", i
             coils(i) = init_Coil(conf, i)
         end do
+        
+        PRINT *, "complete loading configuration"
+        PRINT *, "--------------------------------------"
         
         !open(inputFD, file="E:\\temp\\rhodes\\odb\\C3-17-Gapped-Detail-C2600.inp", status="old")
         !open(reportFD, file="E:\\temp\\rhodes\\odb\\coil.rpt", status="old")

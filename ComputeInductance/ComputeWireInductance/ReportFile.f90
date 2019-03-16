@@ -60,6 +60,7 @@
         end if
         
         numofNodes = numofData / 3
+        PRINT *, "number of nodes:", numofNodes
         
         !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         ! 時間の件数を調べる
@@ -82,6 +83,8 @@
             numofTimes = numofTimes + 1
         end do
 200     continue
+        
+        PRINT *, "number of times:", numofTimes
         
         ALLOCATE (this%positions(numofTimes, numofNodes, 3))
         ALLOCATE (this%times(numofTimes))
@@ -165,6 +168,8 @@
                 countNodes = countNodes + 1
             end if
         end do
+        
+        PRINT *, "complete loading report file"
                 
     end function
     
