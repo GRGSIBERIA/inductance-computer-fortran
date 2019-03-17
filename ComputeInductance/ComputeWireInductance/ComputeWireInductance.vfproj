@@ -28,6 +28,7 @@
 		<File RelativePath=".\Coil.f90"/>
 		<File RelativePath=".\ComputeWireInductance.f90"/>
 		<File RelativePath=".\ConfigFile.f90"/>
+		<File RelativePath=".\FluxDensity.f90"/>
 		<File RelativePath=".\InputFile.f90"/>
 		<File RelativePath=".\Math.f90"/>
 		<File RelativePath=".\ReportFile.f90"/>

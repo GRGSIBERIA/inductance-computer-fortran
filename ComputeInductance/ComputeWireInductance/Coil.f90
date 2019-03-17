@@ -7,7 +7,8 @@
         real :: radius, height
         type(InputFile) :: input
         type(ReportFile) :: top, bottom
-        real, dimension(:,:), allocatable :: forward, right
+        integer :: numofDRadius, numofDTheta
+        real, dimension(:,:), allocatable :: forward, right, center
     end type
     
     interface Coil
@@ -88,13 +89,18 @@
         center = (topCenter - bottomCenter) * 0.5 + bottomCenter
         this%height = Coil_Height(topCenter, bottomCenter)
         this%radius = Coil_Radius(SIZE(this%top%nodeIds), this%top%positions(1,:,:), topCenter)
+        this%numofDRadius = conf%numofDRadius
+        this%numofDTheta = conf%numofDTheta
         
         PRINT *, "radius:", this%radius
         PRINT *, "height:", this%height
+        PRINT *, "number of delta radius:", this%numofDRadius
+        PRINT *, "number of delta theta: ", this%numofDTheta
         
         ! 時間ごとの向きを計算する
         ALLOCATE (this%forward(SIZE(this%top%times), 3))
         ALLOCATE (this%right(SIZE(this%top%times), 3))
+        ALLOCATE (this%center(SIZE(this%top%times), 3))
         
         ! 正面を計算する
         do timeid = 1, SIZE(this%top%times)
@@ -102,6 +108,7 @@
             bottomCenter = Coil_CenterPosition(SIZE(this%bottom%nodeIds), this%bottom%positions(timeid,:,:))
             center = topCenter - bottomCenter
             this%forward(timeid,:) = center / SQRT(DOT_PRODUCT(center, center)) ! 単位ベクトル化
+            this%center(timeid,:) = center
         end do
         
         ! 右手を計算する

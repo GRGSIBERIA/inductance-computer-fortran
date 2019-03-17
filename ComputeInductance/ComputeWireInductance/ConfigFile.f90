@@ -2,12 +2,11 @@
         implicit none
         
         type Config
-            integer :: numofCoils
-            integer :: configFD
-            integer :: inputFD
-            integer :: outputFD
+            integer :: numofCoils, numofDRadius, numofDTheta
+            integer :: configFD, inputFD, outputFD
             integer, dimension(:), allocatable :: wireFDs, topFDs, bottomFDs
             character*32, dimension(:), allocatable :: wirePartNames, coilPartNames
+            
         contains
             procedure :: Release => Config_Release
         end type
@@ -138,6 +137,13 @@
                     OPEN (startFD, file=param, status="replace")
                     this%outputFD = startFD
                     startFD = startFD + 1
+                    
+                elseif(INDEX(option, "dradius") > 0) then
+                    READ (line, *) option, this%numofDRadius
+                    
+                elseif(INDEX(option, "dtheta") > 0) then
+                    READ (line, *) option, this%numofDTheta
+                    
                 end if
                 
             end do
