@@ -1,121 +1,117 @@
 ﻿    module FluxDensity
     implicit none
     
+    type DoubleQuadArgument
+        real, dimension(3) :: wirePosition, coilForward, coilRight
+        real :: sigma, dr, dt
+    end type
+    
+    
     contains
     ! 積分の内側を計算する
-    function DoubleQuad(r, t, dr, dt, wirePosition, coilPosition, coilForward, coilRight, sigma)
+    function DoubleQuad(ntheta, nradius, coilPosition, args)
         use Math
         implicit none
-        real, intent(in) :: dr, dt, r, t, sigma
-        real, dimension(3), intent(in) :: wirePosition, coilPosition, coilForward, coilRight
+        type(DoubleQuadArgument), intent(in) :: args
+        integer, intent(in) :: ntheta, nradius
+        real, dimension(3), intent(in) :: coilPosition
+        real r, t
         
         real DoubleQuad, cosv, sinv, Qr, Rr, Pr, Ar, fracUp, fracDown
         real, dimension(3) :: Qi, Ri, Pi, Ai, Bi, fracDown_vec
         
-        ! 回転変換を実行する
-        cosv = COS(dt)
-        sinv = SIN(dt)
+        r = (nradius-1) * args%dr
+        t = (ntheta-1) * args%dt
         
-        Qi = coilForward * sinv
+        ! 回転変換を実行する
+        cosv = COS(args%dt)
+        sinv = SIN(args%dt)
+        
+        Qi = args%coilForward * sinv
         Qr = cosv
-        Ri = coilForward * SIGN(sinv, -1.0)
+        Ri = args%coilForward * SIGN(sinv, -1.0)
         Rr = cosv
-        Pi = coilRight
+        Pi = args%coilRight
         Pr = 0.0
         
         Ar = MulQuaternion_R(Qr, Qi, Pr, Pi)
-        Ai = MulQuaternion_I(Qr, Qi, Pr, Pi)
-        Bi = MulQuaternion_I(Ar, Ai, Rr, Ri)
+        Ai = MulQuaternion_I(Qi, Pi)
+        Bi = MulQuaternion_I(Ai, Ri)
         
         ! ここで積分の内側の分数を計算する
-        fracUp = dr * sigma
-        fracDown_vec = dr * Bi + wirePosition - coilPosition
+        fracUp = args%dr * args%sigma
+        fracDown_vec = args%dr * Bi + args%wirePosition - coilPosition
         fracDown = Length(fracDown_vec)
         fracDown = fracDown * fracDown * fracDown
         
-        DoubleQuad = fracUp / fracDown * dr * dt
+        DoubleQuad = fracUp / fracDown * args%dr * args%dt
     end function
     
-    function WiredFluxDensity(wirePosition, coilPosition, coilForward, coilRight, coilHeight, coilRadius, sigma, numofDTheta, numofDRadius) result(wire)
+    function WiredFluxDensity(timeid, wirePosition, coil_) result(wiredFlux)
+        use CoilClass
+        use WireClass
         implicit none
-        real, dimension(3), intent(in) :: wirePosition, coilPosition, coilForward, coilRight
-        real, intent(in) :: coilHeight, coilRadius, sigma
-        integer, intent(in) :: numofDTheta, numofDRadius
+        integer, intent(in) :: timeid
+        real, dimension(3) :: wirePosition
+        type(Coil), intent(in) :: coil_
         
-        real wire, dTheta, dRadius
+        real wiredFlux
         real, dimension(3) :: movingUnitVector
         integer ntheta, nradius
-        real, dimension(numofDTheta, numofDRadius) :: densityMap
+        real, dimension(coil_%numofDTheta, coil_%numofDRadius) :: densityMap
         
+        type(DoubleQuadArgument) args
         real, parameter :: PI = ACOS(-1.0)      ! これでPIが出る
         
         ! 単位ベクトルを作る
-        movingUnitVector = coilForward * coilHeight * 0.5
-        dTheta = 2.0 * PI / numofDTheta
-        dRadius = coilRadius / numofDRadius
+        movingUnitVector = coil_%forward(timeid,:) * coil_%height * 0.5
+        
+        args%dt = 2.0 * PI / coil_%numofDTheta
+        args%dr = coil_%radius / coil_%numofDRadius
+        
+        args%wirePosition = wirePosition
+        args%coilForward = coil_%forward(timeid,:)
+        args%coilRight = coil_%right(timeid,:)
+        args%sigma = 1.0
         
         ! コイル上面と底面の差を積分する
-        do ntheta = 1, numofDTheta
-            do nradius = 1, numofDRadius
+        do ntheta = 1, coil_%numofDTheta
+            do nradius = 1, coil_%numofDRadius
                 densityMap(ntheta, nradius) = &
-                    DoubleQuad((nradius-1) * dRadius, (ntheta-1) * dTheta, dRadius, dTheta, &  ! 上面
-                        wirePosition, coilPosition + movingUnitVector, coilForward, coilRight, sigma) - &
-                    DoubleQuad((nradius-1) * dRadius, (ntheta-1) * dTheta, dRadius, dTheta, &  ! 底面
-                        wirePosition, coilPosition - movingUnitVector, coilForward, coilRight, sigma)
+                    DoubleQuad(ntheta, nradius, coil_%center(timeid,:) + movingUnitVector, args) - &
+                    DoubleQuad(ntheta, nradius, coil_%center(timeid,:) - movingUnitVector, args)
             end do
         end do
         
-        wire = SUM(densityMap)
+        wiredFlux = SUM(densityMap)
     end function
     
-    function WiredFluxDensities(&
-        numofWires, wirePositions, numofCoils, coilPositions, coilForwards, coilRights, coilHeights, coilRadius, sigma, numofDTheta, numofDRadius) result(fluxes)
+    function WiredFluxDensities(timeid, wire_, coils) result(wiredFluxes)
+        use CoilClass
+        use WireClass
         implicit none
-        integer, intent(in) :: numofWires, numofCoils, numofDTheta, numofDRadius
-        real, dimension(numofCoils), intent(in) :: coilHeights, coilRadius
-        real, dimension(numofWires, 3), intent(in) :: wirePositions
-        real, dimension(numofCoils, 3), intent(in) :: coilPositions, coilForwards, coilRights
-        real, intent(in) :: sigma
-        real, dimension(numofWires) :: fluxes
+        integer, intent(in) :: timeid
+        type(Wire), intent(in) :: wire_
+        type(Coil), dimension(:), intent(in) :: coils
         integer wi, ci
+        real, dimension(SIZE(coils), wire_%numofNodes) :: wiredFluxesR
+        real, dimension(wire_%numofNodes) :: wiredFluxes
         
-        fluxes = 0
+        wiredFluxes = 0
+        wiredFluxesR = 0
         
-        ! ワイヤごとにコイルによって誘導された磁束密度を求める
-        ! ワイヤが持つ磁束密度がここで求まる
-        do wi = 1, numofWires
-            do ci = 1, numofCoils
-                fluxes(wi) = fluxes(wi) + &
-                    WiredFluxdensity(wirePositions(wi, :), &
-                    coilPositions(ci, :), coilForwards(ci, :), coilRights(ci, :), coilHeights(ci), coilRadius(ci), sigma, &
-                    numofDTheta, numofDRadius)
+        do wi = 1, SIZE(wire_%assembly%nodeIds)
+            do ci = 1, SIZE(coils)
+                wiredFluxesR(ci, wi) = WiredFluxDensity(timeid, wire_%assembly%positions(timeid,wi,:), coils(ci))
+            end do
+        end do
+        
+        do wi = 1, SIZE(wire_%assembly%nodeIds)
+            do ci = 1, SIZE(coils)
+                wiredFluxes(wi) = wiredFluxes(wi) + wiredFluxesR(ci, wi)
             end do
         end do
         
     end function
-
-        
-        
-    function CoiledFluxDensities(numofWires, wirePositions, numofCoils, coilCenter, coilPositions, coilForwards, coilRights, coilHeights, coilRadius, sigma, numofDTheta, numofDRadius) result(fluxes)
-        implicit none
-        integer, intent(in) :: numofWires, numofCoils, numofDTheta, numofDRadius
-        real, dimension(numofCoils), intent(in) :: coilHeights, coilRadius
-        real, dimension(numofWires, 3), intent(in) :: wirePositions
-        real, dimension(numofCoils, 3), intent(in) :: coilPositions, coilForwards, coilRights, coilCenter
-        real, intent(in) :: sigma
-        real, dimension(numofDTheta, numofDRadius) :: fluxes
-        integer ri, ti, ci
-        
-        do ci = 1, numofCoils
-            do ri = 1, numofDRadius
-                do ti = 1, numofDTheta
-                    
-                end do
-            end do
-        end do
-        
-        ! 引数の数が多すぎて保守性が悪くなっているから，現在のバージョンに合わせて修正したほうがいいと思う
-    end function
-
     
     end module

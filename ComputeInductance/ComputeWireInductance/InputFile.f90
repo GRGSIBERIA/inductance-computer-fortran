@@ -15,6 +15,7 @@
     contains
     
     subroutine InputFile_PrintInformation(this, identifier)
+        implicit none
         class(InputFile) this
         character(*), intent(in) :: identifier
         
@@ -28,7 +29,6 @@
         character(*), intent(in) :: part
 
         character*128 line
-        character*64 name
         integer numofNodes, skipTimes, count, moveToFlag
         real, dimension(3) :: moveTo
 

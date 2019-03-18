@@ -25,9 +25,10 @@
         use ConfigClass
         use CoilClass
         use WireClass
+        use FluxDensity
         
         implicit none
-        integer startFD, i
+        integer startFD, i, ti, wi
         type(Config) conf
         type(Wire), dimension(:), allocatable :: wires
         type(Coil), dimension(:), allocatable :: coils
@@ -45,6 +46,7 @@
         do i = 1, SIZE(conf%wireFDs)
             PRINT *, "loading wire", i
             wires(i) = init_Wire(conf, i)
+            
         end do
         
         do i = 1, conf%numofCoils
@@ -55,13 +57,14 @@
         PRINT *, "complete loading configuration"
         PRINT *, "--------------------------------------"
         
-        !open(inputFD, file="E:\\temp\\rhodes\\odb\\C3-17-Gapped-Detail-C2600.inp", status="old")
-        !open(reportFD, file="E:\\temp\\rhodes\\odb\\coil.rpt", status="old")
+        ! 処理に非常に時間がかかっているので対処したい
+        ! 特にMath周りはかなり大きなオーバーヘッドができている
+        do wi = 1, SIZE(wires)
+            do ti = 1, wires(wi)%numofTimes
+                wires(wi)%fluxes(ti,:) = WiredFluxDensities(ti, wires(wi), coils)
+            end do
+        end do
         
-        !input = init_InputFile(inputFD, "coil")
-        !report = init_ReportFile(reportFD, input)
-        !CALL input%PrintInformation("Input file: coil")
-        !CALL report%PrintInformation("Report file: coil")
     end subroutine
     
     end program ComputeWireInductance

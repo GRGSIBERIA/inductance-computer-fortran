@@ -31,7 +31,6 @@
         integer numofData, numofNodes, numofTimes, i
         integer axisPos, axisid, headerPos, nodePos, nodeid, timeid
         integer countNodes
-        real time
         
         ! preparateFlagsを使って全くデータの代入が起きていない節点を探索する
         integer, dimension(:), allocatable :: preparateFlags
