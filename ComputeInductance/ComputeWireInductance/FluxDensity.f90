@@ -100,11 +100,15 @@
         wiredFluxes = 0
         wiredFluxesR = 0
         
+        !$omp parallel
+        !$omp do
         do wi = 1, SIZE(wire_%assembly%nodeIds)
             do ci = 1, SIZE(coils)
                 wiredFluxesR(ci, wi) = WiredFluxDensity(timeid, wire_%assembly%positions(timeid,wi,:), coils(ci))
             end do
         end do
+        !$omp end do
+        !$omp end parallel
         
         do wi = 1, SIZE(wire_%assembly%nodeIds)
             do ci = 1, SIZE(coils)

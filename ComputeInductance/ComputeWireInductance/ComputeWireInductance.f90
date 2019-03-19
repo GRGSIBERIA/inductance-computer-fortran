@@ -26,12 +26,16 @@
         use CoilClass
         use WireClass
         use FluxDensity
+        use, intrinsic :: iso_fortran_env
+        use omp_lib
         
         implicit none
         integer startFD, i, ti, wi
         type(Config) conf
         type(Wire), dimension(:), allocatable :: wires
         type(Coil), dimension(:), allocatable :: coils
+        integer(int64) countMax
+        integer(int32) :: begin_time, end_time, cps
         
         startFD = 20
         
@@ -61,9 +65,13 @@
         ! 特にMath周りはかなり大きなオーバーヘッドができている
         do wi = 1, SIZE(wires)
             do ti = 1, wires(wi)%numofTimes
+                CALL SYSTEM_CLOCK(begin_time, cps, countMax)
                 wires(wi)%fluxes(ti,:) = WiredFluxDensities(ti, wires(wi), coils)
+                CALL SYSTEM_CLOCK(end_time)
+                PRINT *, "wire, step, time:", wi, ti, real(end_time - begin_time) / cps
             end do
         end do
+        
         
     end subroutine
     
