@@ -8,6 +8,7 @@
     
     
     contains
+    
     ! 積分の内側を計算する
     function DoubleQuad(ntheta, nradius, coilPosition, args)
         use Math
@@ -47,6 +48,7 @@
         DoubleQuad = fracUp / fracDown * args%dr * args%dt
     end function
     
+    ! あるワイヤがコイルで誘導された磁束密度を求める
     function WiredFluxDensity(timeid, wirePosition, coil_) result(wiredFlux)
         use CoilClass
         use WireClass
@@ -102,7 +104,7 @@
         
         !$omp parallel
         !$omp do
-        do wi = 1, SIZE(wire_%assembly%nodeIds)
+        do wi = 1, SIZE(wire_%numofNodes)
             do ci = 1, SIZE(coils)
                 wiredFluxesR(ci, wi) = WiredFluxDensity(timeid, wire_%assembly%positions(timeid,wi,:), coils(ci))
             end do
@@ -110,12 +112,49 @@
         !$omp end do
         !$omp end parallel
         
-        do wi = 1, SIZE(wire_%assembly%nodeIds)
+        do wi = 1, SIZE(wire_%numofNodes)
             do ci = 1, SIZE(coils)
                 wiredFluxes(wi) = wiredFluxes(wi) + wiredFluxesR(ci, wi)
             end do
         end do
         
+        coil_%numofDRadius
     end function
+    
+    ! コイルについて放射状に積分する
+    function RadialPointFluxes(timeid, wire_, coil_) result(fluxes)
+        implicit none
+        integer, intent(in) :: timeid
+        type(Wire), intent(in) :: wire_
+        type(Coil), intent(in) :: coil_
+        real, parameter :: PI = ACOS(-1.0)
+        real, dimension(wire_%numofNodes) :: fluxes
+        
+        real, dimension(3) :: movingUnitVector  ! 上面と下面を決めるためのベクトル
+        real dradius, dtheta
+        integer ri, ti
+        
+        dtheta = 2.0 * PI / coil_%numofDTheta
+        dradius = coil_%radius / coil_%numofDRadius
+        movingUnitVector = coil_%forward(timeid,:) * coil_%height * 0.5
+        
+        do ri = 1, coil_%numofDRadius
+            do ti = 1, coil_%numofDTheta
+                
+            end do
+        end do
+        
+    end function
+    
+    ! コイル上面の磁束密度から誘導起電力を求める
+    ! そもそもコイルの底面の磁束密度を引く必要があるのか先生に聞かないとだめかもしれない
+    subroutine RadialFluxes(wires, coils)
+        use CoilClass
+        use WireClass
+        implicit none
+        type(Wire), dimension(:), intent(in) :: wires
+        type(Coil), dimension(:), intent(in) :: coils
+        
+    end subroutine
     
     end module
