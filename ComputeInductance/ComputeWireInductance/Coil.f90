@@ -4,10 +4,10 @@
     implicit none
     
     type Coil
-        real :: radius, height
+        real :: radius, height, flux
         type(InputFile) :: input
         type(ReportFile) :: top, bottom
-        integer :: numofDRadius, numofDTheta
+        integer :: numofDRadius, numofDTheta, numofNodes
         real, dimension(:,:), allocatable :: forward, right, center
     end type
     
@@ -91,6 +91,8 @@
         this%radius = Coil_Radius(SIZE(this%top%nodeIds), this%top%positions(1,:,:), topCenter)
         this%numofDRadius = conf%numofDRadius
         this%numofDTheta = conf%numofDTheta
+        this%numofNodes = SIZE(this%top%nodeIds)
+        this%flux = 0
         
         PRINT *, "radius:", this%radius
         PRINT *, "height:", this%height
@@ -117,8 +119,6 @@
         do timeid = 1, SIZE(this%top%times)
             this%right(timeid,:) = cross(this%forward(timeid, :), unit)
         end do
-        
-        
     end function
     
     end module

@@ -189,16 +189,33 @@
         
         flux = SUM(fluxes)
     end function
-    !
-    !! コイル上面の磁束密度から誘導起電力を求める
-    !! そもそもコイルの底面の磁束密度を引く必要があるのか先生に聞かないとだめかもしれない
-    !subroutine RadialFluxes(wires, coils)
-    !    use CoilClass
-    !    use WireClass
-    !    implicit none
-    !    type(Wire), dimension(:), intent(in) :: wires
-    !    type(Coil), dimension(:), intent(in) :: coils
-    !    
-    !end subroutine
-    !
+    
+    ! コイル上面の磁束密度から誘導起電力を求める
+    ! そもそもコイルの底面の磁束密度を引く必要があるのか先生に聞かないとだめかもしれない
+    subroutine RadialFlux(timeid, wire_, coils, gamma) 
+        use CoilClass
+        use WireClass
+        implicit none
+        type(Wire), intent(in) :: wire_
+        type(Coil), dimension(:), intent(in) :: coils
+        real, dimension(SIZE(coils), SIZE(wires)) :: fluxes
+        integer ci, wi, i
+        
+        ! コイル上の磁束密度をまとめる
+        do wi = 1, wire_%numofNodes
+            do ci = 1, SIZE(coils)
+                fluxes(ci, wi) = RadialPointFluxes(timeid, wire_%assembly%position(timeid, wi, :), wire_%fluxes(timeid, :), gamma, coils(ci))
+            end do
+        end do
+        
+        ! コイル単位でまとめる
+        ! flux自体はコンストラクタで初期化したから大丈夫
+        do wi = 1, wire_%numofNodes
+            do ci = 1, SIZE(coils)
+                coils(ci)%flux = coils(ci)%flux + fluxes(ci, wi)
+            end do
+        end do
+        
+    end subroutine
+    
     end module
