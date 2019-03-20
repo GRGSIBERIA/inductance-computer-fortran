@@ -6,8 +6,32 @@
         real :: sigma, dr, dt
     end type
     
+    type RadialArgument
+        real, dimension(3) :: movingUnitVector, forward, right, center, wirePosition
+        real :: dtheta, dradius, wireFlux, gamma
+    end type
+    
     
     contains
+    
+    ! ベクトルを回転させる
+    function RotateVector(axis, vector, dt) result(rotated)
+        use Math
+        implicit none
+        real, dimension(3), intent(in) :: vector, axis
+        real, dimension(3) :: Qi, Ri, Ai
+        real, dimension(3) :: rotated
+        real, intent(in) :: dt
+        real sinv
+        
+        sinv = SIN(dt)
+        
+        Qi = axis * sinv
+        Ri = axis * SIGN(sinv, -1.0)
+        
+        Ai = MulQuaternion_I(Qi, vector)
+        rotated = MulQuaternion_I(Ai, Ri)
+    end function
     
     ! 積分の内側を計算する
     function DoubleQuad(ntheta, nradius, coilPosition, args)
@@ -18,26 +42,14 @@
         real, dimension(3), intent(in) :: coilPosition
         real r, t
         
-        real DoubleQuad, cosv, sinv, Qr, Rr, Pr, Ar, fracUp, fracDown
-        real, dimension(3) :: Qi, Ri, Pi, Ai, Bi, fracDown_vec
+        real DoubleQuad, fracUp, fracDown
+        real, dimension(3) :: Bi, fracDown_vec
         
         r = (nradius-1) * args%dr
         t = (ntheta-1) * args%dt
         
         ! 回転変換を実行する
-        cosv = COS(args%dt)
-        sinv = SIN(args%dt)
-        
-        Qi = args%coilForward * sinv
-        Qr = cosv
-        Ri = args%coilForward * SIGN(sinv, -1.0)
-        Rr = cosv
-        Pi = args%coilRight
-        Pr = 0.0
-        
-        Ar = MulQuaternion_R(Qr, Qi, Pr, Pi)
-        Ai = MulQuaternion_I(Qi, Pi)
-        Bi = MulQuaternion_I(Ai, Ri)
+        Bi = RotateVector(args%coilForward, args%coilRight, r, args%dt)
         
         ! ここで積分の内側の分数を計算する
         fracUp = args%dr * args%sigma
@@ -104,7 +116,7 @@
         
         !$omp parallel
         !$omp do
-        do wi = 1, SIZE(wire_%numofNodes)
+        do wi = 1, wire_%numofNodes
             do ci = 1, SIZE(coils)
                 wiredFluxesR(ci, wi) = WiredFluxDensity(timeid, wire_%assembly%positions(timeid,wi,:), coils(ci))
             end do
@@ -112,49 +124,81 @@
         !$omp end do
         !$omp end parallel
         
-        do wi = 1, SIZE(wire_%numofNodes)
+        do wi = 1, wire_%numofNodes
             do ci = 1, SIZE(coils)
                 wiredFluxes(wi) = wiredFluxes(wi) + wiredFluxesR(ci, wi)
             end do
         end do
         
-        coil_%numofDRadius
+    end function
+    
+    ! コイル上の位置について磁束密度を求める
+    real function RadialPositionForFlux(dt, dr, arg) result(flux)
+        implicit none
+        type(RadialArgument) arg
+        real, intent(in) :: dt, dr
+        real, dimension(3) :: position, tempPos
+        real fracUp, fracDown
+        
+        ! 右手ベクトルを回転させる
+        ! 回転させた右手ベクトルをdradiusだけ延長する
+        ! これがコイル上の位置に変換される
+        position = RotateVector(forward, right, dt) * dr + movingUnitVector + center
+        
+        tempPos = arg%wirePosition - position
+        fracUp = DOT_PRODUCT(arg%forward, tempPos * arg%forward
+        fracUp = Length(fracUp)
+        fracDown = Length(tempPos)
+        fracDown = fracDown * fracDown * fracDown
+        flux = gamma * arg%wireFlux * (fracUp / fracDown)
     end function
     
     ! コイルについて放射状に積分する
-    function RadialPointFluxes(timeid, wire_, coil_) result(fluxes)
+    real function RadialPointFluxes(timeid, wirePosition, wireFlux, gamma, coil_) result(flux)
         implicit none
+        real, intent(in) :: wireFlux, gamma
+        real, dimension(3), intent(in) :: wirePosition
         integer, intent(in) :: timeid
-        type(Wire), intent(in) :: wire_
         type(Coil), intent(in) :: coil_
         real, parameter :: PI = ACOS(-1.0)
-        real, dimension(wire_%numofNodes) :: fluxes
-        
+        real, dimension(coil_%numofDTheta, coil_%numofDRadius) :: fluxes
         real, dimension(3) :: movingUnitVector  ! 上面と下面を決めるためのベクトル
-        real dradius, dtheta
+        real dradius, dtheta, flux
+        type(RadialArgument) radarg
         integer ri, ti
         
-        dtheta = 2.0 * PI / coil_%numofDTheta
-        dradius = coil_%radius / coil_%numofDRadius
-        movingUnitVector = coil_%forward(timeid,:) * coil_%height * 0.5
+        radarg%dtheta = 2.0 * PI / coil_%numofDTheta
+        radarg%dradius = coil_%radius / coil_%numofDRadius
+        radarg%movingUnitVector = coil_%forward(timeid,:) * coil_%height * 0.5
+        radarg%forward = coil_%forward(timeid,:)
+        radarg%right = coil_%right(timeid,:)
+        radarg%center = coil_%center(timeid,:)
+        radarg%wirePosition = wirePosition
+        radarg%wireFlux = wireFlux
+        radarg%gamma = gamma
         
+        !$omp parallel
+        !$omp do
         do ri = 1, coil_%numofDRadius
             do ti = 1, coil_%numofDTheta
-                
+                fluxes(ti, ri) = RadialPositionForFlux((ti - 1) * dtheta, (ri - 1) * dradius, radarg)
             end do
         end do
+        !$omp end do
+        !$omp end parallel
         
+        flux = SUM(fluxes)
     end function
-    
-    ! コイル上面の磁束密度から誘導起電力を求める
-    ! そもそもコイルの底面の磁束密度を引く必要があるのか先生に聞かないとだめかもしれない
-    subroutine RadialFluxes(wires, coils)
-        use CoilClass
-        use WireClass
-        implicit none
-        type(Wire), dimension(:), intent(in) :: wires
-        type(Coil), dimension(:), intent(in) :: coils
-        
-    end subroutine
-    
+    !
+    !! コイル上面の磁束密度から誘導起電力を求める
+    !! そもそもコイルの底面の磁束密度を引く必要があるのか先生に聞かないとだめかもしれない
+    !subroutine RadialFluxes(wires, coils)
+    !    use CoilClass
+    !    use WireClass
+    !    implicit none
+    !    type(Wire), dimension(:), intent(in) :: wires
+    !    type(Coil), dimension(:), intent(in) :: coils
+    !    
+    !end subroutine
+    !
     end module
