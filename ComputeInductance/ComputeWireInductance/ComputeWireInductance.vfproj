@@ -31,9 +31,11 @@
 		<File RelativePath=".\FluxDensity.f90"/>
 		<File RelativePath=".\InputFile.f90"/>
 		<File RelativePath=".\Math.f90"/>
+		<File RelativePath=".\Printing.f90"/>
 		<File RelativePath=".\ReportFile.f90"/>
 		<File RelativePath=".\Wire.f90"/></Filter>
 		<Filter Name="ヘッダーファイル" Filter="fi;fd"/>
-		<Filter Name="リソースファイル" Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"/>
+		<Filter Name="リソースファイル" Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe">
+		<File RelativePath=".\config.conf"/></Filter>
 		<File RelativePath=".\ReadMe.txt"/></Files>
 	<Globals/></VisualStudioProject>

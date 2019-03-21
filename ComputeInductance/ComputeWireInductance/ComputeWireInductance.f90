@@ -26,10 +26,11 @@
         use CoilClass
         use WireClass
         use FluxDensity
+        use PrintingMod
         use, intrinsic :: iso_fortran_env
         
         implicit none
-        integer startFD, i, ti, wi
+        integer startFD, i, ti, wi, ci
         type(Config) conf
         type(Wire), dimension(:), allocatable :: wires
         type(Coil), dimension(:), allocatable :: coils
@@ -72,9 +73,14 @@
         end do
         
         do ti = 1, wires(1)%numofTimes
-            CALL ComputeCoilFlux(ti, wires, coils, 1.0)
+            CALL ComputeCoilInductance(ti, wires, coils, 1.0)
         end do
         
+        do ci = 1, SIZE(coils)
+            CALL WriteCoilInductance(conf%outputFD, coils(ci)%top%times, coils(ci)%inductances)
+        end do
+        
+        CALL conf%Release()
         
     end subroutine
     

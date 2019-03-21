@@ -45,7 +45,7 @@
         real DoubleQuad, fracUp, fracDown
         real, dimension(3) :: Bi, fracDown_vec
         
-        r = (nradius-1) * args%dr
+        r = nradius * args%dr       ! 中心を考えるとnthetaだけ磁束密度が重複する
         t = (ntheta-1) * args%dt
         
         ! 回転変換を実行する
@@ -200,7 +200,7 @@
         type(Coil), dimension(:) :: coils
         real, dimension(SIZE(coils), wire_%numofNodes) :: fluxes
         integer, intent(in) :: timeid
-        integer ci, wi, i
+        integer ci, wi
         real gamma
         
         ! コイル上の磁束密度をまとめる
@@ -214,13 +214,13 @@
         ! flux自体はコンストラクタで初期化したから大丈夫
         do wi = 1, wire_%numofNodes
             do ci = 1, SIZE(coils)
-                coils(ci)%fluxes(timeid) = coils(ci)%fluxes(timeid) + fluxes(ci, wi)
+                coils(ci)%inductances(timeid) = coils(ci)%inductances(timeid) + fluxes(ci, wi)
             end do
         end do
         
     end subroutine
     
-    subroutine ComputeCoilFlux(timeid, wires, coils, gamma)
+    subroutine ComputeCoilInductance(timeid, wires, coils, gamma)
         use CoilClass
         use WireClass
         implicit none
