@@ -27,7 +27,6 @@
         use WireClass
         use FluxDensity
         use, intrinsic :: iso_fortran_env
-        use omp_lib
         
         implicit none
         integer startFD, i, ti, wi
@@ -70,6 +69,10 @@
                 CALL SYSTEM_CLOCK(end_time)
                 PRINT *, "wire, step, time:", wi, ti, real(end_time - begin_time) / cps
             end do
+        end do
+        
+        do ti = 1, wires(1)%numofTimes
+            CALL ComputeCoilFlux(ti, wires, coils, 1.0)
         end do
         
         

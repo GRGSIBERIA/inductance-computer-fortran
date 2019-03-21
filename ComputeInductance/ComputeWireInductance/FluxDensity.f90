@@ -49,11 +49,11 @@
         t = (ntheta-1) * args%dt
         
         ! 回転変換を実行する
-        Bi = RotateVector(args%coilForward, args%coilRight, r, args%dt)
+        Bi = RotateVector(args%coilForward, args%coilRight, args%dt)
         
         ! ここで積分の内側の分数を計算する
         fracUp = args%dr * args%sigma
-        fracDown_vec = args%dr * Bi + args%wirePosition - coilPosition
+        fracDown_vec = r * Bi + args%wirePosition - coilPosition
         fracDown = Length(fracDown_vec)
         fracDown = fracDown * fracDown * fracDown
         
@@ -134,6 +134,7 @@
     
     ! コイル上の位置について磁束密度を求める
     real function RadialPositionForFlux(dt, dr, arg) result(flux)
+        use Math
         implicit none
         type(RadialArgument) arg
         real, intent(in) :: dt, dr
@@ -143,18 +144,18 @@
         ! 右手ベクトルを回転させる
         ! 回転させた右手ベクトルをdradiusだけ延長する
         ! これがコイル上の位置に変換される
-        position = RotateVector(forward, right, dt) * dr + movingUnitVector + center
+        position = RotateVector(arg%forward, arg%right, dt) * dr + arg%movingUnitVector + arg%center
         
         tempPos = arg%wirePosition - position
-        fracUp = DOT_PRODUCT(arg%forward, tempPos * arg%forward
-        fracUp = Length(fracUp)
+        fracUp = Length(DOT_PRODUCT(arg%forward, tempPos) * arg%forward)
         fracDown = Length(tempPos)
         fracDown = fracDown * fracDown * fracDown
-        flux = gamma * arg%wireFlux * (fracUp / fracDown)
+        flux = arg%gamma * arg%wireFlux * (fracUp / fracDown)
     end function
     
     ! コイルについて放射状に積分する
     real function RadialPointFluxes(timeid, wirePosition, wireFlux, gamma, coil_) result(flux)
+        use CoilClass
         implicit none
         real, intent(in) :: wireFlux, gamma
         real, dimension(3), intent(in) :: wirePosition
@@ -162,8 +163,7 @@
         type(Coil), intent(in) :: coil_
         real, parameter :: PI = ACOS(-1.0)
         real, dimension(coil_%numofDTheta, coil_%numofDRadius) :: fluxes
-        real, dimension(3) :: movingUnitVector  ! 上面と下面を決めるためのベクトル
-        real dradius, dtheta, flux
+        real dradius, dtheta
         type(RadialArgument) radarg
         integer ri, ti
         
@@ -197,14 +197,16 @@
         use WireClass
         implicit none
         type(Wire), intent(in) :: wire_
-        type(Coil), dimension(:), intent(in) :: coils
-        real, dimension(SIZE(coils), SIZE(wires)) :: fluxes
+        type(Coil), dimension(:) :: coils
+        real, dimension(SIZE(coils), wire_%numofNodes) :: fluxes
+        integer, intent(in) :: timeid
         integer ci, wi, i
+        real gamma
         
         ! コイル上の磁束密度をまとめる
         do wi = 1, wire_%numofNodes
             do ci = 1, SIZE(coils)
-                fluxes(ci, wi) = RadialPointFluxes(timeid, wire_%assembly%position(timeid, wi, :), wire_%fluxes(timeid, :), gamma, coils(ci))
+                fluxes(ci, wi) = RadialPointFluxes(timeid, wire_%assembly%positions(timeid, wi, :), wire_%fluxes(timeid, wi), gamma, coils(ci))
             end do
         end do
         
@@ -212,10 +214,26 @@
         ! flux自体はコンストラクタで初期化したから大丈夫
         do wi = 1, wire_%numofNodes
             do ci = 1, SIZE(coils)
-                coils(ci)%flux = coils(ci)%flux + fluxes(ci, wi)
+                coils(ci)%fluxes(timeid) = coils(ci)%fluxes(timeid) + fluxes(ci, wi)
             end do
         end do
         
+    end subroutine
+    
+    subroutine ComputeCoilFlux(timeid, wires, coils, gamma)
+        use CoilClass
+        use WireClass
+        implicit none
+        integer, intent(in) :: timeid
+        type(Wire), dimension(:), intent(in) :: wires
+        type(Coil), dimension(:), intent(in) :: coils
+        real, intent(in) :: gamma
+        integer wi
+        
+        do wi = 1, SIZE(wires)
+            CALL RadialFlux(timeid, wires(wi), coils, gamma)
+        end do
+    
     end subroutine
     
     end module

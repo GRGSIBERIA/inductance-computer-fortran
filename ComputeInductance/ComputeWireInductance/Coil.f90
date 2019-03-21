@@ -4,11 +4,12 @@
     implicit none
     
     type Coil
-        real :: radius, height, flux
+        real :: radius, height
         type(InputFile) :: input
         type(ReportFile) :: top, bottom
         integer :: numofDRadius, numofDTheta, numofNodes
         real, dimension(:,:), allocatable :: forward, right, center
+        real, dimension(:), allocatable :: fluxes
     end type
     
     interface Coil
@@ -92,7 +93,6 @@
         this%numofDRadius = conf%numofDRadius
         this%numofDTheta = conf%numofDTheta
         this%numofNodes = SIZE(this%top%nodeIds)
-        this%flux = 0
         
         PRINT *, "radius:", this%radius
         PRINT *, "height:", this%height
@@ -103,6 +103,7 @@
         ALLOCATE (this%forward(SIZE(this%top%times), 3))
         ALLOCATE (this%right(SIZE(this%top%times), 3))
         ALLOCATE (this%center(SIZE(this%top%times), 3))
+        ALLOCATE (this%fluxes(SIZE(this%top%times)))
         
         ! 正面を計算する
         do timeid = 1, SIZE(this%top%times)

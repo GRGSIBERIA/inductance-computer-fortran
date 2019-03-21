@@ -6,7 +6,7 @@
     type Wire
         type(InputFile) input
         type(ReportFile) assembly
-        real, dimension(:,:), allocatable :: fluxes
+        real, dimension(:,:), allocatable :: fluxes ! time, nodeid
         integer :: numofTimes, numofNodes
     end type
     
