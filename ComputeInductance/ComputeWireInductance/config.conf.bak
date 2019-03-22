@@ -1,0 +1,7 @@
+﻿inpfile, "E:\\temp\\rhodes\\odb\\C3-17-Gapped-Detail-C2600.inp"
+wirefile, "geometory", "E:\\temp\\rhodes\\odb\\tine.rpt"
+wirefile, "geometory", "E:\\temp\\rhodes\\odb\\tonebar.rpt"
+outputfile, "C:\\Users\\EIICHI\\Documents\\GitHUB\\inductance-computer-fortran\\ComputeInductance\\ComputeWireInductance\\output.out"
+coilfile, "coil", "E:\\temp\\rhodes\\odb\\top.rpt", "E:\\temp\\rhodes\\odb\\bottom.rpt"
+dradius, 25
+dtheta, 45

@@ -75,12 +75,13 @@
         PRINT *, "completed all wired flux densities"
         
         do ti = 1, wires(1)%numofTimes
-            CALL ComputeCoilInductance(ti, wires, coils, 1.0d0)
+            CALL ComputeCoilFlux(ti, wires, coils, 1.0d0)
         end do
         PRINT *, "complete computing inductances on coils"
         
         do ci = 1, SIZE(coils)
-            CALL WriteCoilInductance(conf%outputFD, coils(ci)%top%times, coils(ci)%inductances)
+            CALL DifferencialFluxToInductance(coils(ci))   ! ここで誘導起電力求めちゃってます！
+            CALL WriteCoilInductance(conf%outputFD, coils(ci)%top%times, coils(ci)%fluxes, coils(ci)%inductances)   ! ここでファイルに出力しています！
         end do
         
         CALL conf%Release()

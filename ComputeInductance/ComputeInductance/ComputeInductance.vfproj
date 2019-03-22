@@ -25,7 +25,15 @@
 				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration></Configurations>
 	<Files>
 		<Filter Name="ソースファイル" Filter="f90;for;f;fpp;ftn;def;odl;idl">
-		<File RelativePath=".\ComputeInductance.f90"/></Filter>
+		<File RelativePath=".\Coil.f90"/>
+		<File RelativePath=".\ComputeInductance.f90"/>
+		<File RelativePath=".\ConfigFile.f90"/>
+		<File RelativePath=".\FluxDensity.f90"/>
+		<File RelativePath=".\InputFile.f90"/>
+		<File RelativePath=".\Math.f90"/>
+		<File RelativePath=".\Printing.f90"/>
+		<File RelativePath=".\ReportFile.f90"/>
+		<File RelativePath=".\Wire.f90"/></Filter>
 		<Filter Name="ヘッダーファイル" Filter="fi;fd"/>
 		<Filter Name="リソースファイル" Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"/>
 		<File RelativePath=".\ReadMe.txt"/></Files>
