@@ -51,6 +51,7 @@
             this%configFD = startFD
             startFD = startFD + 1
             
+            
             OPEN (this%configFD, file=configPath, status="old")
             
             numofInputs = 0

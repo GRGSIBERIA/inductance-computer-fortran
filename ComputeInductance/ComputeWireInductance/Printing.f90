@@ -25,9 +25,9 @@
         real, dimension(:), intent(in) :: times, inductances
         integer ti
         
-        WRITE (outputFD, *) "*Coil", SIZE(inductances)
+        WRITE (outputFD, *) "*Coil", ",", SIZE(inductances)
         do ti = 1, SIZE(inductances)
-            WRITE (outputFD, *) times(ti), inductances(ti)
+            WRITE (outputFD, *) times(ti), ",", inductances(ti)
         end do
         
     end subroutine

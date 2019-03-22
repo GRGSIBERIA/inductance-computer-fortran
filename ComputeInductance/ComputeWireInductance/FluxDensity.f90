@@ -153,7 +153,7 @@
         flux = arg%gamma * arg%wireFlux * (fracUp / fracDown)
     end function
     
-    ! コイルについて放射状に積分する
+    ! ワイヤ点からコイルについて放射状に積分する
     real function RadialPointFluxes(timeid, wirePosition, wireFlux, gamma, coil_) result(flux)
         use CoilClass
         implicit none
@@ -176,7 +176,7 @@
         radarg%wirePosition = wirePosition
         radarg%wireFlux = wireFlux
         radarg%gamma = gamma
-        
+                
         !$omp parallel
         !$omp do
         do ri = 1, coil_%numofDRadius
@@ -211,7 +211,7 @@
         end do
         
         ! コイル単位でまとめる
-        ! flux自体はコンストラクタで初期化したから大丈夫
+        ! inductance自体はコンストラクタで初期化したから大丈夫
         do wi = 1, wire_%numofNodes
             do ci = 1, SIZE(coils)
                 coils(ci)%inductances(timeid) = coils(ci)%inductances(timeid) + fluxes(ci, wi)

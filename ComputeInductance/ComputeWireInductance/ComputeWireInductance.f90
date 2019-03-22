@@ -58,23 +58,26 @@
             coils(i) = init_Coil(conf, i)
         end do
         
-        PRINT *, "complete loading configuration"
+        PRINT *, "completed loading configuration"
         PRINT *, "--------------------------------------"
         
         ! 処理に非常に時間がかかっているので対処したい
         ! 特にMath周りはかなり大きなオーバーヘッドができている
         do wi = 1, SIZE(wires)
             do ti = 1, wires(wi)%numofTimes
-                CALL SYSTEM_CLOCK(begin_time, cps, countMax)
+                !CALL SYSTEM_CLOCK(begin_time, cps, countMax)
                 wires(wi)%fluxes(ti,:) = WiredFluxDensities(ti, wires(wi), coils)
-                CALL SYSTEM_CLOCK(end_time)
-                PRINT *, "wire, step, time:", wi, ti, real(end_time - begin_time) / cps
+                !CALL SYSTEM_CLOCK(end_time)
+                !PRINT *, "wire, step, time:", wi, ti, real(end_time - begin_time) / cps
             end do
+            PRINT *, "completed computing wired flux density", wi
         end do
+        PRINT *, "completed all wired flux densities"
         
         do ti = 1, wires(1)%numofTimes
             CALL ComputeCoilInductance(ti, wires, coils, 1.0)
         end do
+        PRINT *, "complete computing inductances on coils"
         
         do ci = 1, SIZE(coils)
             CALL WriteCoilInductance(conf%outputFD, coils(ci)%top%times, coils(ci)%inductances)
