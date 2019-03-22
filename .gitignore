@@ -404,3 +404,4 @@ ComputeInductance/stepcounter-3.0.4-jar-with-dependencies.jar
 stepcounter-3.0.4-jar-with-dependencies.jar
 *.db3
 ComputeInductance/ComputeWireInductance/config.conf
+ComputeInductance/ComputeWireInductance/output.out

@@ -2,13 +2,13 @@
     implicit none
     
     type DoubleQuadArgument
-        real, dimension(3) :: wirePosition, coilForward, coilRight
-        real :: sigma, dr, dt
+        double precision, dimension(3) :: wirePosition, coilForward, coilRight
+        double precision :: sigma, dr, dt
     end type
     
     type RadialArgument
-        real, dimension(3) :: movingUnitVector, forward, right, center, wirePosition
-        real :: dtheta, dradius, wireFlux, gamma
+        double precision, dimension(3) :: movingUnitVector, forward, right, center, wirePosition
+        double precision :: dtheta, dradius, wireFlux, gamma
     end type
     
     
@@ -18,11 +18,11 @@
     function RotateVector(axis, vector, dt) result(rotated)
         use Math
         implicit none
-        real, dimension(3), intent(in) :: vector, axis
-        real, dimension(3) :: Qi, Ri, Ai
-        real, dimension(3) :: rotated
-        real, intent(in) :: dt
-        real sinv
+        double precision, dimension(3), intent(in) :: vector, axis
+        double precision, dimension(3) :: Qi, Ri, Ai
+        double precision, dimension(3) :: rotated
+        double precision, intent(in) :: dt
+        double precision sinv
         
         sinv = SIN(dt)
         
@@ -39,11 +39,11 @@
         implicit none
         type(DoubleQuadArgument), intent(in) :: args
         integer, intent(in) :: ntheta, nradius
-        real, dimension(3), intent(in) :: coilPosition
-        real r, t
+        double precision, dimension(3), intent(in) :: coilPosition
+        double precision r, t
         
-        real DoubleQuad, fracUp, fracDown
-        real, dimension(3) :: Bi, fracDown_vec
+        double precision DoubleQuad, fracUp, fracDown
+        double precision, dimension(3) :: Bi, fracDown_vec
         
         r = nradius * args%dr       ! 中心を考えるとnthetaだけ磁束密度が重複する
         t = (ntheta-1) * args%dt
@@ -66,16 +66,16 @@
         use WireClass
         implicit none
         integer, intent(in) :: timeid
-        real, dimension(3) :: wirePosition
+        double precision, dimension(3) :: wirePosition
         type(Coil), intent(in) :: coil_
         
-        real wiredFlux
-        real, dimension(3) :: movingUnitVector
+        double precision wiredFlux
+        double precision, dimension(3) :: movingUnitVector
         integer ntheta, nradius
-        real, dimension(coil_%numofDTheta, coil_%numofDRadius) :: densityMap
+        double precision, dimension(coil_%numofDTheta, coil_%numofDRadius) :: densityMap
         
         type(DoubleQuadArgument) args
-        real, parameter :: PI = ACOS(-1.0)      ! これでPIが出る
+        double precision, parameter :: PI = ACOS(-1.0)      ! これでPIが出る
         
         ! 単位ベクトルを作る
         movingUnitVector = coil_%forward(timeid,:) * coil_%height * 0.5
@@ -108,8 +108,8 @@
         type(Wire), intent(in) :: wire_
         type(Coil), dimension(:), intent(in) :: coils
         integer wi, ci
-        real, dimension(SIZE(coils), wire_%numofNodes) :: wiredFluxesR
-        real, dimension(wire_%numofNodes) :: wiredFluxes
+        double precision, dimension(SIZE(coils), wire_%numofNodes) :: wiredFluxesR
+        double precision, dimension(wire_%numofNodes) :: wiredFluxes
         
         wiredFluxes = 0
         wiredFluxesR = 0
@@ -133,13 +133,13 @@
     end function
     
     ! コイル上の位置について磁束密度を求める
-    real function RadialPositionForFlux(dt, dr, arg) result(flux)
+    double precision function RadialPositionForFlux(dt, dr, arg) result(flux)
         use Math
         implicit none
         type(RadialArgument) arg
-        real, intent(in) :: dt, dr
-        real, dimension(3) :: position, tempPos
-        real fracUp, fracDown
+        double precision, intent(in) :: dt, dr
+        double precision, dimension(3) :: position, tempPos
+        double precision fracUp, fracDown
         
         ! 右手ベクトルを回転させる
         ! 回転させた右手ベクトルをdradiusだけ延長する
@@ -154,16 +154,16 @@
     end function
     
     ! ワイヤ点からコイルについて放射状に積分する
-    real function RadialPointFluxes(timeid, wirePosition, wireFlux, gamma, coil_) result(flux)
+    double precision function RadialPointFluxes(timeid, wirePosition, wireFlux, gamma, coil_) result(flux)
         use CoilClass
         implicit none
-        real, intent(in) :: wireFlux, gamma
-        real, dimension(3), intent(in) :: wirePosition
+        double precision, intent(in) :: wireFlux, gamma
+        double precision, dimension(3), intent(in) :: wirePosition
         integer, intent(in) :: timeid
         type(Coil), intent(in) :: coil_
-        real, parameter :: PI = ACOS(-1.0)
-        real, dimension(coil_%numofDTheta, coil_%numofDRadius) :: fluxes
-        real dradius, dtheta
+        double precision, parameter :: PI = ACOS(-1.0)
+        double precision, dimension(coil_%numofDTheta, coil_%numofDRadius) :: fluxes
+        double precision dradius, dtheta
         type(RadialArgument) radarg
         integer ri, ti
         
@@ -198,10 +198,10 @@
         implicit none
         type(Wire), intent(in) :: wire_
         type(Coil), dimension(:) :: coils
-        real, dimension(SIZE(coils), wire_%numofNodes) :: fluxes
+        double precision, dimension(SIZE(coils), wire_%numofNodes) :: fluxes
         integer, intent(in) :: timeid
         integer ci, wi
-        real gamma
+        double precision gamma
         
         ! コイル上の磁束密度をまとめる
         do wi = 1, wire_%numofNodes
@@ -227,7 +227,7 @@
         integer, intent(in) :: timeid
         type(Wire), dimension(:), intent(in) :: wires
         type(Coil), dimension(:), intent(in) :: coils
-        real, intent(in) :: gamma
+        double precision, intent(in) :: gamma
         integer wi
         
         do wi = 1, SIZE(wires)

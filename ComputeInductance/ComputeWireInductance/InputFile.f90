@@ -3,7 +3,7 @@
 
     type InputFile
         integer, dimension(:), allocatable :: nodeIds
-        real, dimension(:,:), allocatable :: positions
+        double precision, dimension(:,:), allocatable :: positions
     contains
         procedure :: PrintInformation => InputFile_PrintInformation
     end type
@@ -30,7 +30,7 @@
 
         character*128 line
         integer numofNodes, skipTimes, count, moveToFlag
-        real, dimension(3) :: moveTo
+        double precision, dimension(3) :: moveTo
 
         numofNodes = 0
         skipTimes = 0

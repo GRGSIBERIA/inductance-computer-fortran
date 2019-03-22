@@ -22,7 +22,7 @@
     subroutine WriteCoilInductance(outputFD, times, inductances)
         implicit none
         integer, intent(in) :: outputFD
-        real, dimension(:), intent(in) :: times, inductances
+        double precision, dimension(:), intent(in) :: times, inductances
         integer ti
         
         WRITE (outputFD, *) "*Coil", ",", SIZE(inductances)

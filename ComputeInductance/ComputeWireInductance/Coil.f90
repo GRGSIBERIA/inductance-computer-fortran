@@ -4,12 +4,12 @@
     implicit none
     
     type Coil
-        real :: radius, height
+        double precision :: radius, height
         type(InputFile) :: input
         type(ReportFile) :: top, bottom
         integer :: numofDRadius, numofDTheta, numofNodes, numofTimes
-        real, dimension(:,:), allocatable :: forward, right, center
-        real, dimension(:), allocatable :: inductances
+        double precision, dimension(:,:), allocatable :: forward, right, center
+        double precision, dimension(:), allocatable :: inductances
     end type
     
     interface Coil
@@ -22,35 +22,35 @@
     function Coil_CenterPosition(size, positions) result(center)
         implicit none
         integer, intent(in) :: size
-        real, dimension(size,3), intent(in) :: positions
-        real, dimension(3) :: center
+        double precision, dimension(size,3), intent(in) :: positions
+        double precision, dimension(3) :: center
         integer i
         
         center = 0
         do i = 1, size
             center = center + positions(i,:)
         end do
-        center = center / real(size)
+        center = center / dble(size)
     end function
     
     ! 高さを計算する関数
-    real function Coil_Height(top, bottom) result(h)
+    double precision function Coil_Height(top, bottom) result(h)
         implicit none
-        real, dimension(3), intent(in) :: top, bottom
-        real, dimension(3) :: temp
+        double precision, dimension(3), intent(in) :: top, bottom
+        double precision, dimension(3) :: temp
         
         temp = top - bottom
         h = SQRT(DOT_PRODUCT(temp, temp))
     end function
     
     ! 半径を計算する関数
-    real function Coil_Radius(size, positions, center) result(r)
+    double precision function Coil_Radius(size, positions, center) result(r)
         implicit none
         integer, intent(in) :: size
-        real, dimension(size,3), intent(in) :: positions
-        real, dimension(3), intent(in) :: center
-        real, dimension(3) :: dot
-        real max, tmp
+        double precision, dimension(size,3), intent(in) :: positions
+        double precision, dimension(3), intent(in) :: center
+        double precision, dimension(3) :: dot
+        double precision max, tmp
         integer i
         
         ! 中心から一番外側の節点までの距離を半径とする
@@ -74,7 +74,7 @@
         implicit none
         type(Config), intent(in) :: conf
         integer, intent(in) :: coilCount
-        real, dimension(3) :: topCenter, bottomCenter, center, unit
+        double precision, dimension(3) :: topCenter, bottomCenter, center, unit
         integer timeid
         
         ! ファイルの読み込み

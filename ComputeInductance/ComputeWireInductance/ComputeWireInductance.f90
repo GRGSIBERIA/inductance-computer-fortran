@@ -75,7 +75,7 @@
         PRINT *, "completed all wired flux densities"
         
         do ti = 1, wires(1)%numofTimes
-            CALL ComputeCoilInductance(ti, wires, coils, 1.0)
+            CALL ComputeCoilInductance(ti, wires, coils, 1.0d0)
         end do
         PRINT *, "complete computing inductances on coils"
         
