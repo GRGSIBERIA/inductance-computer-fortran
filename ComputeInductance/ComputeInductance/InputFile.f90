@@ -3,7 +3,7 @@
 
     type InputFile
         integer, dimension(:), allocatable :: nodeIds
-        real, dimension(:,:), allocatable :: positions
+        double precision, dimension(:,:), allocatable :: positions
     contains
         procedure :: PrintInformation => InputFile_PrintInformation
     end type
@@ -15,6 +15,7 @@
     contains
     
     subroutine InputFile_PrintInformation(this, identifier)
+        implicit none
         class(InputFile) this
         character(*), intent(in) :: identifier
         
@@ -28,9 +29,8 @@
         character(*), intent(in) :: part
 
         character*128 line
-        character*64 name
         integer numofNodes, skipTimes, count, moveToFlag
-        real, dimension(3) :: moveTo
+        double precision, dimension(3) :: moveTo
 
         numofNodes = 0
         skipTimes = 0

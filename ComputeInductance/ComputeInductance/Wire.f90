@@ -6,6 +6,8 @@
     type Wire
         type(InputFile) input
         type(ReportFile) assembly
+        double precision, dimension(:,:), allocatable :: fluxes ! time, nodeid
+        integer :: numofTimes, numofNodes
     end type
     
     interface Wire
@@ -22,6 +24,10 @@
         
         this%input = init_InputFile(conf%inputFD, conf%wirePartNames(wireCount))
         this%assembly = init_ReportFile(conf%wireFDs(wireCount), this%input)
+        this%numofTimes = SIZE(this%assembly%times)
+        this%numofNodes = SIZE(this%assembly%nodeIds)
+        
+        ALLOCATE (this%fluxes(this%numofTimes, this%numofNodes))
     end function
     
     end module

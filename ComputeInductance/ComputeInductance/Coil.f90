@@ -4,10 +4,13 @@
     implicit none
     
     type Coil
-        real :: radius, height
+        double precision :: radius, height
         type(InputFile) :: input
         type(ReportFile) :: top, bottom
-        real, dimension(:,:), allocatable :: forward, right
+        integer :: numofDRadius, numofDTheta, numofNodes, numofTimes
+        double precision, dimension(:,:), allocatable :: forward, right, center
+        double precision, dimension(:), allocatable :: fluxes
+        double precision, dimension(:), allocatable :: inductances
     end type
     
     interface Coil
@@ -20,35 +23,35 @@
     function Coil_CenterPosition(size, positions) result(center)
         implicit none
         integer, intent(in) :: size
-        real, dimension(size,3), intent(in) :: positions
-        real, dimension(3) :: center
+        double precision, dimension(size,3), intent(in) :: positions
+        double precision, dimension(3) :: center
         integer i
         
         center = 0
         do i = 1, size
             center = center + positions(i,:)
         end do
-        center = center / real(size)
+        center = center / dble(size)
     end function
     
     ! 高さを計算する関数
-    real function Coil_Height(top, bottom) result(h)
+    double precision function Coil_Height(top, bottom) result(h)
         implicit none
-        real, dimension(3), intent(in) :: top, bottom
-        real, dimension(3) :: temp
+        double precision, dimension(3), intent(in) :: top, bottom
+        double precision, dimension(3) :: temp
         
         temp = top - bottom
         h = SQRT(DOT_PRODUCT(temp, temp))
     end function
     
     ! 半径を計算する関数
-    real function Coil_Radius(size, positions, center) result(r)
+    double precision function Coil_Radius(size, positions, center) result(r)
         implicit none
         integer, intent(in) :: size
-        real, dimension(size,3), intent(in) :: positions
-        real, dimension(3), intent(in) :: center
-        real, dimension(3) :: dot
-        real max, tmp
+        double precision, dimension(size,3), intent(in) :: positions
+        double precision, dimension(3), intent(in) :: center
+        double precision, dimension(3) :: dot
+        double precision max, tmp
         integer i
         
         ! 中心から一番外側の節点までの距離を半径とする
@@ -72,7 +75,7 @@
         implicit none
         type(Config), intent(in) :: conf
         integer, intent(in) :: coilCount
-        real, dimension(3) :: topCenter, bottomCenter, center, unit
+        double precision, dimension(3) :: topCenter, bottomCenter, center, unit
         integer timeid
         
         ! ファイルの読み込み
@@ -88,30 +91,38 @@
         center = (topCenter - bottomCenter) * 0.5 + bottomCenter
         this%height = Coil_Height(topCenter, bottomCenter)
         this%radius = Coil_Radius(SIZE(this%top%nodeIds), this%top%positions(1,:,:), topCenter)
+        this%numofDRadius = conf%numofDRadius
+        this%numofDTheta = conf%numofDTheta
+        this%numofNodes = SIZE(this%top%nodeIds)
+        this%numofTimes = SIZE(this%top%times)
         
         PRINT *, "radius:", this%radius
         PRINT *, "height:", this%height
+        PRINT *, "number of delta radius:", this%numofDRadius
+        PRINT *, "number of delta theta: ", this%numofDTheta
         
         ! 時間ごとの向きを計算する
-        ALLOCATE (this%forward(SIZE(this%top%times), 3))
-        ALLOCATE (this%right(SIZE(this%top%times), 3))
+        ALLOCATE (this%forward(this%numofTimes, 3))
+        ALLOCATE (this%right(this%numofTimes, 3))
+        ALLOCATE (this%center(this%numofTimes, 3))
+        ALLOCATE (this%inductances(this%numofTimes))
+        ALLOCATE (this%fluxes(this%numofTimes))
         
         ! 正面を計算する
-        do timeid = 1, SIZE(this%top%times)
+        do timeid = 1, this%numofTimes
             topCenter = Coil_CenterPosition(SIZE(this%top%nodeIds), this%top%positions(timeid,:,:))
             bottomCenter = Coil_CenterPosition(SIZE(this%bottom%nodeIds), this%bottom%positions(timeid,:,:))
             center = topCenter - bottomCenter
             this%forward(timeid,:) = center / SQRT(DOT_PRODUCT(center, center)) ! 単位ベクトル化
+            this%center(timeid,:) = center
         end do
         
         ! 右手を計算する
         unit = (/ 1, 1, 1 /)
         unit = unit / SQRT(DOT_PRODUCT(unit, unit))
-        do timeid = 1, SIZE(this%top%times)
+        do timeid = 1, this%numofTimes
             this%right(timeid,:) = cross(this%forward(timeid, :), unit)
         end do
-        
-        
     end function
     
     end module

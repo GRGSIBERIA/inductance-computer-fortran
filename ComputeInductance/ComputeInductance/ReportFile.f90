@@ -3,8 +3,8 @@
     
     type ReportFile
         integer, dimension(:), allocatable :: nodeIds
-        real, dimension(:), allocatable :: times
-        real, dimension(:,:,:), allocatable :: positions
+        double precision, dimension(:), allocatable :: times
+        double precision, dimension(:,:,:), allocatable :: positions
     contains
         procedure :: PrintInformation => ReportFile_PrintInformation
     end type
@@ -31,11 +31,10 @@
         integer numofData, numofNodes, numofTimes, i
         integer axisPos, axisid, headerPos, nodePos, nodeid, timeid
         integer countNodes
-        real time
         
         ! preparateFlagsを使って全くデータの代入が起きていない節点を探索する
         integer, dimension(:), allocatable :: preparateFlags
-        real, dimension(:,:,:), allocatable :: preparatePositions
+        double precision, dimension(:,:,:), allocatable :: preparatePositions
         
         READ (reportFD, "()")   ! 先頭1行飛ばす
         
