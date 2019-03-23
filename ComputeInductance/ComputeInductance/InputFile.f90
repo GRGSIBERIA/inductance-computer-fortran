@@ -25,6 +25,7 @@
     end subroutine
     
     type(InputFile) function init_InputFile(inputFD, part) result(this)
+        implicit none
         integer, intent(in) :: inputFD
         character(*), intent(in) :: part
 
