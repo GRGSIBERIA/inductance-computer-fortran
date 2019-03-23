@@ -142,7 +142,7 @@
                 
                 elseif(INDEX(option, "niffile") > 0) then
                     READ (line, *) option, param
-                    OPEN (startFD, file=param, status="replace")
+                    OPEN (startFD, file=param, status="old")
                     this%nifFD = startFD
                     startFD = startFD + 1
                     

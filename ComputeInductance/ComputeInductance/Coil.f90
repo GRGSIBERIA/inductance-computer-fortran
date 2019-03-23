@@ -79,7 +79,7 @@
         integer timeid
         
         ! ファイルの読み込み
-        this%input = init_InputFile(conf%inputFD, conf%coilPartNames(coilCount))
+        this%input = init_InputFile(conf%nifFD, conf%coilPartNames(coilCount))
         PRINT *, "loading top of coil"
         this%top = init_ReportFile(conf%topFDs(coilCount), this%input)
         PRINT *, "loading bottom of coil"
