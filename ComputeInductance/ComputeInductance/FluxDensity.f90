@@ -200,21 +200,20 @@
         type(Coil), dimension(:) :: coils
         double precision, dimension(SIZE(coils), wire_%numofNodes) :: fluxes
         integer, intent(in) :: timeid
-        integer ci, wi
+        integer ci, ni
         double precision gamma
         
         ! コイル上の磁束密度をまとめる
-        do wi = 1, wire_%numofNodes
+        do ni = 1, wire_%numofNodes
             do ci = 1, SIZE(coils)
-                fluxes(ci, wi) = RadialPointFluxes(timeid, wire_%assembly%positions(timeid, wi, :), wire_%fluxes(timeid, wi), gamma, coils(ci))
+                fluxes(ci, ni) = RadialPointFluxes(timeid, wire_%assembly%positions(timeid, ni, :), wire_%fluxes(timeid, ni), gamma, coils(ci))
             end do
         end do
         
         ! コイル単位でまとめる
-        ! inductance自体はコンストラクタで初期化したから大丈夫
-        do wi = 1, wire_%numofNodes
+        do ni = 1, wire_%numofNodes
             do ci = 1, SIZE(coils)
-                coils(ci)%fluxes(timeid) = coils(ci)%inductances(timeid) + fluxes(ci, wi)
+                coils(ci)%fluxes(timeid) = coils(ci)%fluxes(timeid) + fluxes(ci, ni)
             end do
         end do
         

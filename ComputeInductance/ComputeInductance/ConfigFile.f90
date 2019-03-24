@@ -146,8 +146,11 @@
                 
             elseif(INDEX(option, "niffile") > 0) then
                 READ (line, *) option, param
-                OPEN (startFD, file=param, status="old")
                 this%nifPath = param
+                
+                CALL EXECUTE_COMMAND_LINE("python arrange.py " // this%configPath // " " // this%nifPath, wait = .true.)
+                OPEN (startFD, file=param, status="old")    ! ファイルを開く前にコマンドを実行しないと，ファイルを開けない，という当たり前のエラーが出る
+                
                 this%nifFD = startFD
                 startFD = startFD + 1
                     
@@ -160,7 +163,7 @@
             end if
                 
         end do
-200     continue            
+200     continue
         
     end function
     

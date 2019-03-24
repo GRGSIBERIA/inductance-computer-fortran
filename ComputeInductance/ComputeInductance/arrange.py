@@ -1,7 +1,6 @@
 import sys
-import codecs
-import numpy as np
 import re
+import numpy as np
 
 DEBUG = False
 
@@ -90,6 +89,8 @@ def Main():
     inppath = get_inpfile(confpath)
     lines = get_lines(inppath)
     
+    print("reading input file")
+
     # 内容を読み込んでメモリ上に展開する
     result = {}
     line_num = 0
@@ -107,8 +108,12 @@ def Main():
 
         line_num += 1
     
+    print("generating normalized input file")
+
     export_file(outpath, result)
 
+    print("prepared normalized input file")
+    print(" --------------------------------------")
 
 if __name__ == "__main__":
     Main()

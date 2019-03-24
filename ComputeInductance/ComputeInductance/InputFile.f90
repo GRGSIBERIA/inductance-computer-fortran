@@ -25,6 +25,7 @@
         PRINT *, "Number of Nodes: ", SIZE(this%nodeIds)
     end subroutine
     
+    ! nifファイルから入力ファイルを再現する
     type(InputFile) function init_InputFile(nifFD, part) result(this)
         integer, intent(in) :: nifFD
         character(*), intent(in) :: part
