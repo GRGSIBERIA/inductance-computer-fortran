@@ -6,6 +6,7 @@
             integer :: configFD, inputFD, outputFD, nifFD
             integer, dimension(:), allocatable :: wireFDs, topFDs, bottomFDs
             character*32, dimension(:), allocatable :: wirePartNames, coilPartNames
+            character*256 :: nifPath, configPath, inputPath, outputPath
             
         contains
             procedure :: Release => Config_Release
@@ -44,12 +45,13 @@
             integer startFD
             
             character*32    option, partname
-            character*256   param, topfile, bottomfile
+            character*256   param, topfile, bottomfile, niffile, inpfile
             character*1024  line, also
             integer wireCount, coilCount, inputCount
             integer numofWires, numofCoils, numofInputs
             
             this%configFD = startFD
+            this%configPath = configPath
             startFD = startFD + 1
             
             
@@ -132,17 +134,20 @@
                     READ (line, *) option, param
                     OPEN (startFD, file=param, status="old")
                     this%inputFD = startFD
+                    this%inputPath = param
                     startFD = startFD + 1
                 
                 elseif(INDEX(option, "outputfile") > 0) then ! 出力ファイルを開く
                     READ (line, *) option, param
                     OPEN (startFD, file=param, status="replace")
                     this%outputFD = startFD
+                    this%outputPath = param
                     startFD = startFD + 1
                 
                 elseif(INDEX(option, "niffile") > 0) then
                     READ (line, *) option, param
                     OPEN (startFD, file=param, status="old")
+                    this%nifPath = param
                     this%nifFD = startFD
                     startFD = startFD + 1
                     

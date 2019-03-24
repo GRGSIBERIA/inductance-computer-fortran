@@ -1,7 +1,7 @@
 import sys
 import codecs
-import re
 import numpy as np
+import re
 
 DEBUG = False
 
@@ -9,7 +9,7 @@ def get_inpfile(confpath):
     inppath = ""
 
     # 設定ファイルを読み込んでinpfileのパスを控える
-    with codecs.open(confpath, "r", encoding="utf-8", errors="replace") as f:
+    with open(confpath, "r", encoding="utf-8", errors="replace") as f:
         for line in f:
             # inpfileの文字列が来たらパスを覚える
             if "inpfile" in line:
@@ -18,7 +18,7 @@ def get_inpfile(confpath):
 
 def get_lines(inppath):
     lines = None
-    with codecs.open(inppath, "r", encoding="utf-8", errors="replace") as f:
+    with open(inppath, "r", encoding="utf-8", errors="replace") as f:
         lines = f.readlines()
     return lines
 
@@ -65,7 +65,7 @@ def add_node_positions(line_num, lines, prev_part, result):
 def export_file(path, result):
     position = np.array([0.0, 0.0, 0.0], dtype="float64")
 
-    with codecs.open(path, "w", encoding="utf-8") as f:
+    with open(path, "w", encoding="utf-8") as f:
         for part, data in result.items():
             # 先頭行の作成
             f.writelines("*Part, {}, {}\n".format(part, len(data["nodes"])))
