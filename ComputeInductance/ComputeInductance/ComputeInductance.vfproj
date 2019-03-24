@@ -52,6 +52,7 @@
 		<File RelativePath=".\FluxDensity.f90"/>
 		<File RelativePath=".\InputFile.f90"/>
 		<File RelativePath=".\Math.f90"/>
+		<File RelativePath=".\NIFFile.f90"/>
 		<File RelativePath=".\Printing.f90"/>
 		<File RelativePath=".\ReportFile.f90"/>
 		<File RelativePath=".\Wire.f90"/></Filter>
