@@ -79,7 +79,7 @@
         integer timeid
         
         ! ファイルの読み込み
-        this%input = init_InputFile(conf%inputFD, conf%coilPartNames(coilCount))
+        this%input = init_InputFile(conf%nifFD, conf%coilPartNames(coilCount))
         PRINT *, "loading top of coil"
         this%top = init_ReportFile(conf%topFDs(coilCount), this%input)
         PRINT *, "loading bottom of coil"
@@ -95,7 +95,7 @@
         this%numofDTheta = conf%numofDTheta
         this%numofNodes = SIZE(this%top%nodeIds)
         this%numofTimes = SIZE(this%top%times)
-        
+         
         PRINT *, "radius:", this%radius
         PRINT *, "height:", this%height
         PRINT *, "number of delta radius:", this%numofDRadius
@@ -107,6 +107,9 @@
         ALLOCATE (this%center(this%numofTimes, 3))
         ALLOCATE (this%inductances(this%numofTimes))
         ALLOCATE (this%fluxes(this%numofTimes))
+        
+        this%inductances = 0
+        this%fluxes = 0
         
         ! 正面を計算する
         do timeid = 1, this%numofTimes
