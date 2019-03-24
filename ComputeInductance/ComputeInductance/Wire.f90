@@ -22,7 +22,7 @@
         type(Config), intent(in) :: conf
         integer, intent(in) :: wireCount
         
-        this%input = init_InputFile(conf%nifFD, conf%wirePartNames(wireCount))
+        this%input = init_InputFile(conf%inputFD, conf%wirePartNames(wireCount))
         this%assembly = init_ReportFile(conf%wireFDs(wireCount), this%input)
         this%numofTimes = SIZE(this%assembly%times)
         this%numofNodes = SIZE(this%assembly%nodeIds)
