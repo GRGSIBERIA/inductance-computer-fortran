@@ -88,8 +88,8 @@
         ALLOCATE (this%positions(numofTimes, numofNodes, 3))
         ALLOCATE (this%times(numofTimes))
         ALLOCATE (this%nodeIds(numofNodes))
-        ALLOCATE (preparatePositions(numofTimes, SIZE(input%nodeIds), 3))
-        ALLOCATE (preparateFlags(SIZE(input%nodeIds)))
+        ALLOCATE (preparatePositions(numofTimes, input%numofNodes, 3))
+        ALLOCATE (preparateFlags(input%numofNodes))
         
         this%positions = 0
         this%times = 0
