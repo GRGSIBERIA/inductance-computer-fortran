@@ -28,12 +28,13 @@
     end function
     
     ! クォータニオンの虚数部を求める
-    function MulQuaternion_I(Ai, Bi) result(retI)
+    function MulQuaternion_I(Ar, Ai, Br, Bi) result(retI)
         implicit none
         double precision, dimension(3), intent(in) :: Ai, Bi
         double precision, dimension(3) :: retI
+        double precision, intent(in) :: Ar, Br
         
-        retI = Cross(Ai, Bi)
+        retI = Ar * Bi + Ai * Br + Cross(Ai, Bi)
     end function
     
     ! ベクトルの長さを返す
