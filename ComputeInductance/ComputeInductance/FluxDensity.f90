@@ -60,7 +60,9 @@
         fracDown = Length(fracDown_vec)
         fracDown = fracDown * fracDown * fracDown
         
-        DoubleQuad = fracUp / fracDown * dRdT(nradius, ntheta, args%dr, args%dt) !args%dr * args%dt
+        DoubleQuad = fracUp / fracDown * &
+            (nradius * args%dr * ntheta * args%dt * 0.5 - (nradius-1) * args%dr * ntheta * args%dt * 0.5)
+        ! 積分係数は r^2 theta / 2 だが，rは既に分子で掛けているため，r theta / 2になる
     end function
     
     ! あるワイヤがコイルで誘導された磁束密度を求める
@@ -139,7 +141,7 @@
     double precision function dRdT(ri, ti, dradius, dtheta) result(area)
         integer, intent(in) :: ri, ti
         double precision, intent(in) :: dradius, dtheta
-        area = (ri * dradius) * (ri * dradius) * dtheta * 0.5 - ((ri-1) * dradius) * ((ri-1) * dradius) * dtheta * 0.5 
+        area = (ri * dradius * ri * dradius - (ri-1) * dradius * (ri-1) * dradius) * ti * dtheta * 0.5 
     end function
     
     ! コイル上の位置について磁束密度を求める
@@ -160,8 +162,7 @@
         fracUp = DOT_PRODUCT(arg%forward, vector)
         fracDown = Length(vector)
         fracDown = fracDown * fracDown * fracDown
-        flux = (arg%gamma * arg%wireFlux * fracUp) / fracDown ! * dRdT(ri, ti, arg%dradius, arg%dtheta)
-        ! 測定点を総和するだけなので積分はいらない
+        flux = fracUp / fracDown * dRdT(ri, ti, arg%dradius, arg%dtheta)
         
     end function
     
@@ -186,8 +187,6 @@
         radarg%right = coil_%right(timeid,:)
         radarg%center = coil_%center(timeid,:)
         radarg%wirePosition = wirePosition
-        radarg%wireFlux = wireFlux
-        radarg%gamma = gamma
                 
         !$omp parallel
         !$omp do
@@ -199,7 +198,7 @@
         !$omp end do
         !$omp end parallel
         
-        flux = SUM(fluxes)
+        flux = wireFlux * gamma * SUM(fluxes)
     end function
     
     ! コイル上面の磁束密度から誘導起電力を求める

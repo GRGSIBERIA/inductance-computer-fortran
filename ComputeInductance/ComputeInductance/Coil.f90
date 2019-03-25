@@ -75,7 +75,7 @@
         implicit none
         type(Config), intent(in) :: conf
         integer, intent(in) :: coilCount
-        double precision, dimension(3) :: topCenter, bottomCenter, center, unit
+        double precision, dimension(3) :: topCenter, bottomCenter, vector, unit
         integer timeid
         
         ! ファイルの読み込み
@@ -88,7 +88,6 @@
         ! 半径，高さなどを計算する
         topCenter = Coil_CenterPosition(SIZE(this%top%nodeIds), this%top%positions(1,:,:))
         bottomCenter = Coil_CenterPosition(SIZE(this%bottom%nodeIds), this%bottom%positions(1,:,:))
-        center = (topCenter - bottomCenter) * 0.5 + bottomCenter
         this%height = Coil_Height(topCenter, bottomCenter)
         this%radius = Coil_Radius(SIZE(this%top%nodeIds), this%top%positions(1,:,:), topCenter)
         this%numofDRadius = conf%numofDRadius
@@ -115,13 +114,13 @@
         do timeid = 1, this%numofTimes
             topCenter = Coil_CenterPosition(SIZE(this%top%nodeIds), this%top%positions(timeid,:,:))
             bottomCenter = Coil_CenterPosition(SIZE(this%bottom%nodeIds), this%bottom%positions(timeid,:,:))
-            center = topCenter - bottomCenter
-            this%forward(timeid,:) = center / SQRT(DOT_PRODUCT(center, center)) ! 単位ベクトル化
-            this%center(timeid,:) = center
+            vector = topCenter - bottomCenter
+            this%forward(timeid,:) = Normalize(vector) ! 単位ベクトル化
+            this%center(timeid,:) = vector * 0.5 + bottomCenter
         end do
         
         ! 右手を計算する
-        unit = (/ 1, 1, 1 /)
+        unit = (/ 1, 0, 0 /)
         unit = unit / SQRT(DOT_PRODUCT(unit, unit))
         do timeid = 1, this%numofTimes
             this%right(timeid,:) = cross(this%forward(timeid, :), unit)

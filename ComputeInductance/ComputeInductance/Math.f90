@@ -51,7 +51,7 @@
         double precision, dimension(3), intent(in) :: V
         double precision, dimension(3) :: Normalize
         
-        Normalize = V / Length(V)
+        Normalize = 1.0d0 / Length(V) * V
     end function
     
     end module
