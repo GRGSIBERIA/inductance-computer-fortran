@@ -56,7 +56,7 @@
         
         ! ここで積分の内側の分数を計算する
         fracUp = r * args%sigma
-        fracDown_vec = r * Bi + args%wirePosition - coilPosition
+        fracDown_vec = r * Bi + coilPosition - args%wirePosition
         fracDown = Length(fracDown_vec)
         fracDown = fracDown * fracDown * fracDown
         
