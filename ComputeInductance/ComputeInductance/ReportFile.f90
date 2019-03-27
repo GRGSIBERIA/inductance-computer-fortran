@@ -71,7 +71,7 @@
         end do
         
         ! 時間のカウント
-        numofTimes = 0
+        numofTimes = 1
         do
             READ (reportFD, "(A)") line
             

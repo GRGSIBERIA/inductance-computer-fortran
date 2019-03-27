@@ -55,13 +55,12 @@
         Bi = RotateVector(args%coilForward, args%coilRight, t)
         
         ! ここで積分の内側の分数を計算する
-        fracUp = r * args%sigma
-        fracDown_vec = r * Bi + coilPosition - args%wirePosition
+        fracUp = args%sigma * (r * r * args%dt * 0.5 - (nradius-1) * args%dr * (nradius-1) * args%dr * args%dt * 0.5)
+        fracDown_vec = args%wirePosition - (r * Bi + coilPosition)
         fracDown = Length(fracDown_vec)
         fracDown = fracDown * fracDown * fracDown
         
-        DoubleQuad = fracUp / fracDown * &
-            (nradius * args%dr * ntheta * args%dt * 0.5 - (nradius-1) * args%dr * ntheta * args%dt * 0.5)
+        DoubleQuad = fracUp / fracDown
         ! 積分係数は r^2 theta / 2 だが，rは既に分子で掛けているため，r theta / 2になる
     end function
     
@@ -141,7 +140,7 @@
     double precision function dRdT(ri, ti, dradius, dtheta) result(area)
         integer, intent(in) :: ri, ti
         double precision, intent(in) :: dradius, dtheta
-        area = (ri * dradius * ri * dradius - (ri-1) * dradius * (ri-1) * dradius) * ti * dtheta * 0.5 
+        area = (ri * dradius * ri * dradius - (ri-1) * dradius * (ri-1) * dradius) * dtheta * 0.5 
     end function
     
     ! コイル上の位置について磁束密度を求める
@@ -159,10 +158,10 @@
         position = RotateVector(arg%forward, arg%right, ti * arg%dtheta) * (ri * arg%dradius) + arg%movingUnitVector + arg%center
         
         vector = arg%wirePosition - position
-        fracUp = DOT_PRODUCT(arg%forward, vector)
+        fracUp = DOT_PRODUCT(arg%forward, vector) * dRdT(ri, ti, arg%dradius, arg%dtheta)
         fracDown = Length(vector)
         fracDown = fracDown * fracDown * fracDown
-        flux = fracUp / fracDown * dRdT(ri, ti, arg%dradius, arg%dtheta)
+        flux = fracUp / fracDown
         
     end function
     
