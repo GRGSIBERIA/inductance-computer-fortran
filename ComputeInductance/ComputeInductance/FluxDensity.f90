@@ -190,8 +190,9 @@
                 
         !$omp parallel
         !$omp do
-        do ti = 1, coil_%numofDTheta
-            do ri = 1, coil_%numofDRadius
+        
+        do ri = 1, coil_%numofDRadius
+            do ti = 1, coil_%numofDTheta
                 fluxes(ti, ri) = RadialPositionForFlux(ri, ti, radarg)
             end do
         end do
