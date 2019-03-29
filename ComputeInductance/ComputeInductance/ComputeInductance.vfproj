@@ -35,7 +35,7 @@
 				<Tool Name="VFPostBuildEventTool"/>
 				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration>
 		<Configuration Name="Release|x64">
-				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" Optimization="optimizeFull" GenAlternateCodePaths="codeForAVX2" UseProcessorExtensions="codeExclusivelyAVX2" Parallelization="true" AutoParallelThreshold="50" VectorizationThreshold="50" BufferedIO="true" InterproceduralOptimizations="ipoMultiFile" MtuneConstruct="mcArchSKL" OpenMP="OpenMPParallelCode" FloatingPointModel="fast2" RuntimeLibrary="rtMultiThreadedDLL"/>
+				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" Optimization="optimizeFull" GenAlternateCodePaths="codeForAVX2" UseProcessorExtensions="codeExclusivelyAVX2" Parallelization="true" AutoParallelThreshold="50" VectorizationThreshold="50" BufferedIO="true" InterproceduralOptimizations="ipoMultiFile" MtuneConstruct="mcArchSKL" OpenMP="OpenMPParallelCode" FloatingPointModel="fast2" BoundsCheck="true" RuntimeLibrary="rtMultiThreadedDLL"/>
 				<Tool Name="VFLinkerTool" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" SubSystem="subSystemConsole"/>
 				<Tool Name="VFResourceCompilerTool"/>
 				<Tool Name="VFMidlTool" SuppressStartupBanner="true" TargetEnvironment="midlTargetAMD64"/>

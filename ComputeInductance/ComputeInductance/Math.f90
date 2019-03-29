@@ -45,6 +45,24 @@
         Length = SQRT(DOT_PRODUCT(V, V))
     end function
     
+    function Length4(V) result(L)
+        implicit none
+        double precision, dimension(4), intent(in) :: V
+        double precision L
+        L = SQRT(DOT_PRODUCT(V, V))
+    end function
+    
+    subroutine Normalize4(R, I)
+        implicit none
+        double precision, dimension(3), intent(inout) :: I
+        double precision, intent(inout) :: R
+        double precision, dimension(4) :: Q
+        Q = (/ I(:), R /)
+        Q = Q / Length4(Q)
+        I = Q(1:3)
+        R = Q(4)
+    end subroutine
+    
     ! ベクトルの正規化
     function Normalize(V)
         implicit none
