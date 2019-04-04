@@ -7,7 +7,7 @@
             integer, dimension(:), allocatable :: wireFDs, topFDs, bottomFDs
             character*32, dimension(:), allocatable :: wirePartNames, coilPartNames
             character*256 :: nifPath, configPath, inputPath, outputPath
-            
+            integer enableElementMode
         contains
             procedure :: Release => Config_Release
         end type
@@ -84,7 +84,8 @@
             STOP
         end if
         ! エラー処理ここまで
-            
+        
+        this%enableElementMode = 0
         this%numofCoils = numofCoils
         ALLOCATE (this%wireFDs(numofWires))
         ALLOCATE (this%topFDs(numofCoils))
@@ -148,7 +149,7 @@
                 READ (line, *) option, param
                 this%nifPath = param
                 
-                CALL EXECUTE_COMMAND_LINE("python arrange.py " // this%configPath // " " // this%nifPath, wait = .true.)
+                CALL EXECUTE_COMMAND_LINE("python python/arrange.py " // this%configPath // " " // this%nifPath, wait = .true.)
                 OPEN (startFD, file=param, status="old")    ! ファイルを開く前にコマンドを実行しないと，ファイルを開けない，という当たり前のエラーが出る
                 
                 this%nifFD = startFD
@@ -159,7 +160,12 @@
                     
             elseif(INDEX(option, "dtheta") > 0) then
                 READ (line, *) option, this%numofDTheta
-                    
+                
+            elseif(INDEX(option, "elementmode") > 0) then
+                READ (line, *) option, param
+                if (INDEX(param, "true") > 0) then
+                    this%enableElementMode = 1
+                end if
             end if
                 
         end do

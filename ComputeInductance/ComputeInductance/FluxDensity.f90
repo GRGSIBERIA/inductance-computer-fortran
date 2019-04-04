@@ -63,7 +63,7 @@
         fracDown = Length(fracDown_vec)
         fracDown = fracDown * fracDown * fracDown
         
-        DoubleQuad = fracUp / fracDown * dRdT(args%dr, args%dt)
+        DoubleQuad = fracUp / fracDown * dRdT(args%dr, args%dt, nradius, ntheta)
     end function
     
     ! あるワイヤがコイルで誘導された磁束密度を求める
@@ -139,9 +139,10 @@
     end function
     
     ! コイルの面積について積分する
-    double precision function dRdT(dradius, dtheta) result(area)
+    double precision function dRdT(dradius, dtheta, ri, ti) result(area)
         double precision, intent(in) :: dradius, dtheta
-        area = dradius * dradius * dtheta * 0.5d0
+        integer, intent(in) :: ri, ti
+        area = dradius * dradius * dtheta * (ri * ri * ti - (ri-1) * (ri-1) * ti) * 0.5d0
     end function
     
     ! コイル上の位置について磁束密度を求める
@@ -162,7 +163,7 @@
         fracUp = DOT_PRODUCT(arg%forward, vector)
         fracDown = Length(vector)
         fracDown = fracDown * fracDown * fracDown
-        flux = fracUp / fracDown * dRdT(arg%dradius, arg%dtheta)
+        flux = fracUp / fracDown * dRdT(arg%dradius, arg%dtheta, ri, ti)
         
     end function
     
