@@ -1,7 +1,6 @@
 import sys
 import codecs
 import re
-import numpy as np
 
 DEBUG = True
 
@@ -30,12 +29,12 @@ def get_lines(inppath):
 def generate_node_vector(line):
     rec = [x.strip() for x in line.split(",")]
     result = [int(rec[0])]
-    result.append(np.array([float(x) for x in rec[1:]], dtype="float64"))
+    result.append([float(x) for x in rec[1:]])
     return result
 
 def generate_vector(line):
     rec = [x.strip() for x in line.split(",")]
-    return np.array([float(r) for r in rec], dtype="float64")
+    return [float(r) for r in rec]
 
 def extract_equal(line, attribute):
     data = line.split(",")
@@ -88,7 +87,7 @@ def add_node_positions(line_num, lines, prev_part, elementmode, result):
 
 # ファイルを正規化して出力する
 def export_file(path, elementmode, result):
-    position = np.array([0.0, 0.0, 0.0], dtype="float64")
+    position = [0.0, 0.0, 0.0]
 
     with codecs.open(path, "w", encoding="utf-8") as f:
         for part, data in result.items():
