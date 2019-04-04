@@ -413,3 +413,4 @@ ComputeInductance/ComputeInductance/config.conf.bbb
 *.conf
 *.nif
 *.nin
+ComputeInductance/ComputeInductance/config.conf.force
