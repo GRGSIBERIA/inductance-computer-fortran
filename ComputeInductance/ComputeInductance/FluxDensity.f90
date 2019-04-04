@@ -15,22 +15,28 @@
     contains
     
     ! ベクトルを回転させる
-    function RotateVector(axis, vector, dt) result(rotated)
+    function RotateVector(axis, vector, dt) result(Bi)
         use Math
         implicit none
         double precision, dimension(3), intent(in) :: vector, axis
         double precision, dimension(3) :: Qi, Ri, Ai
-        double precision, dimension(3) :: rotated
+        double precision, dimension(3) :: Bi
         double precision, intent(in) :: dt
-        double precision sinv
+        double precision Qr, Rr, Ar, Br
         
-        sinv = SIN(dt)
+        Qi = axis * SIN(dt * 0.5d0)        ! 四元数
+        Qr = COS(dt * 0.5d0)
+        CALL Normalize4(Qr, Qi)
         
-        Qi = axis * sinv
-        Ri = axis * SIGN(sinv, -1.0)
+        Ri = -Qi                ! 共役四元数
+        Rr = Qr
         
-        Ai = MulQuaternion_I(Qi, vector)
-        rotated = MulQuaternion_I(Ai, Ri)
+        Ai = MulQuaternion_I(Qr, Qi, 0.0d0, vector)
+        Ar = MulQuaternion_R(Qr, Qi, 0.0d0, vector)
+        CALL Normalize4(Ar, Ai)
+        Bi = MulQuaternion_I(Ar, Ai, Rr, Ri)
+        Br = MulQuaternion_R(Ar, Ai, Rr, Ri)
+        CALL Normalize4(Br, Bi)
     end function
     
     ! 積分の内側を計算する
@@ -45,19 +51,19 @@
         double precision DoubleQuad, fracUp, fracDown
         double precision, dimension(3) :: Bi, fracDown_vec
         
-        r = nradius * args%dr       ! 中心を考えるとnthetaだけ磁束密度が重複する
-        t = (ntheta-1) * args%dt
+        r = nradius * args%dr
+        t = ntheta * args%dt
         
         ! 回転変換を実行する
-        Bi = RotateVector(args%coilForward, args%coilRight, args%dt)
+        Bi = RotateVector(args%coilForward, args%coilRight, t)
         
         ! ここで積分の内側の分数を計算する
-        fracUp = args%dr * args%sigma
-        fracDown_vec = r * Bi + args%wirePosition - coilPosition
+        fracUp = args%sigma
+        fracDown_vec = args%wirePosition - (r * Bi + coilPosition)
         fracDown = Length(fracDown_vec)
         fracDown = fracDown * fracDown * fracDown
         
-        DoubleQuad = fracUp / fracDown * args%dr * args%dt
+        DoubleQuad = fracUp / fracDown * dRdT(args%dr, args%dt, nradius, ntheta)
     end function
     
     ! あるワイヤがコイルで誘導された磁束密度を求める
@@ -132,25 +138,33 @@
         
     end function
     
+    ! コイルの面積について積分する
+    double precision function dRdT(dradius, dtheta, ri, ti) result(area)
+        double precision, intent(in) :: dradius, dtheta
+        integer, intent(in) :: ri, ti
+        area = dradius * dradius * dtheta * (ri * ri * ti - (ri-1) * (ri-1) * ti) * 0.5d0
+    end function
+    
     ! コイル上の位置について磁束密度を求める
-    double precision function RadialPositionForFlux(dt, dr, arg) result(flux)
+    double precision function RadialPositionForFlux(ri, ti, arg) result(flux)
         use Math
         implicit none
         type(RadialArgument) arg
-        double precision, intent(in) :: dt, dr
-        double precision, dimension(3) :: position, tempPos
+        integer :: ri, ti
+        double precision, dimension(3) :: position, vector
         double precision fracUp, fracDown
         
         ! 右手ベクトルを回転させる
         ! 回転させた右手ベクトルをdradiusだけ延長する
         ! これがコイル上の位置に変換される
-        position = RotateVector(arg%forward, arg%right, dt) * dr + arg%movingUnitVector + arg%center
+        position = RotateVector(arg%forward, arg%right, ti * arg%dtheta) * (ri * arg%dradius) + arg%movingUnitVector + arg%center
         
-        tempPos = arg%wirePosition - position
-        fracUp = Length(DOT_PRODUCT(arg%forward, tempPos) * arg%forward)
-        fracDown = Length(tempPos)
+        vector = arg%wirePosition - position
+        fracUp = DOT_PRODUCT(arg%forward, vector)
+        fracDown = Length(vector)
         fracDown = fracDown * fracDown * fracDown
-        flux = arg%gamma * arg%wireFlux * (fracUp / fracDown)
+        flux = fracUp / fracDown * dRdT(arg%dradius, arg%dtheta, ri, ti)
+        
     end function
     
     ! ワイヤ点からコイルについて放射状に積分する
@@ -169,25 +183,36 @@
         
         radarg%dtheta = 2.0 * PI / coil_%numofDTheta
         radarg%dradius = coil_%radius / coil_%numofDRadius
-        radarg%movingUnitVector = coil_%forward(timeid,:) * coil_%height * 0.5
         radarg%forward = coil_%forward(timeid,:)
         radarg%right = coil_%right(timeid,:)
         radarg%center = coil_%center(timeid,:)
+        radarg%movingUnitVector = radarg%forward * coil_%height * 0.5
         radarg%wirePosition = wirePosition
-        radarg%wireFlux = wireFlux
-        radarg%gamma = gamma
                 
         !$omp parallel
         !$omp do
+        
         do ri = 1, coil_%numofDRadius
             do ti = 1, coil_%numofDTheta
-                fluxes(ti, ri) = RadialPositionForFlux((ti - 1) * dtheta, (ri - 1) * dradius, radarg)
+                fluxes(ti, ri) = RadialPositionForFlux(ri, ti, radarg)
             end do
         end do
         !$omp end do
         !$omp end parallel
         
-        flux = SUM(fluxes)
+        !! コイルの底面も考慮するならこの処理を行う
+        !radarg%movingUnitVector = -radarg%movingUnitVector
+        !!$omp parallel
+        !!$omp do
+        !do ri = 1, coil_%numofDRadius
+        !    do ti = 1, coil_%numofDTheta
+        !        fluxes(ti, ri) = fluxes(ti, ri) + RadialPositionForFlux(ri, ti, radarg)
+        !    end do
+        !end do
+        !!$omp end do
+        !!$omp end parallel
+        
+        flux = wireFlux * gamma * SUM(fluxes)
     end function
     
     ! コイル上面の磁束密度から誘導起電力を求める
