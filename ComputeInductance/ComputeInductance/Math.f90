@@ -28,12 +28,13 @@
     end function
     
     ! クォータニオンの虚数部を求める
-    function MulQuaternion_I(Ai, Bi) result(retI)
+    function MulQuaternion_I(Ar, Ai, Br, Bi) result(retI)
         implicit none
         double precision, dimension(3), intent(in) :: Ai, Bi
         double precision, dimension(3) :: retI
+        double precision, intent(in) :: Ar, Br
         
-        retI = Cross(Ai, Bi)
+        retI = Ar * Bi + Ai * Br + Cross(Ai, Bi)
     end function
     
     ! ベクトルの長さを返す
@@ -44,13 +45,31 @@
         Length = SQRT(DOT_PRODUCT(V, V))
     end function
     
+    function Length4(V) result(L)
+        implicit none
+        double precision, dimension(4), intent(in) :: V
+        double precision L
+        L = SQRT(DOT_PRODUCT(V, V))
+    end function
+    
+    subroutine Normalize4(R, I)
+        implicit none
+        double precision, dimension(3), intent(inout) :: I
+        double precision, intent(inout) :: R
+        double precision, dimension(4) :: Q
+        Q = (/ I(:), R /)
+        Q = Q / Length4(Q)
+        I = Q(1:3)
+        R = Q(4)
+    end subroutine
+    
     ! ベクトルの正規化
     function Normalize(V)
         implicit none
         double precision, dimension(3), intent(in) :: V
         double precision, dimension(3) :: Normalize
         
-        Normalize = V / Length(V)
+        Normalize = 1.0d0 / Length(V) * V
     end function
     
     end module

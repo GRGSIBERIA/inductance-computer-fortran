@@ -5,6 +5,7 @@
         integer numofNodes
         integer, dimension(:), allocatable :: nodeIds
         double precision, dimension(:,:), allocatable :: positions
+        integer, dimension(:,:), allocatable :: elements
     contains
         procedure :: PrintInformation => InputFile_PrintInformation
     end type
@@ -26,20 +27,27 @@
     end subroutine
     
     ! nifファイルから入力ファイルを再現する
-    type(InputFile) function init_InputFile(nifFD, part) result(this)
-        integer, intent(in) :: nifFD
+    type(InputFile) function init_InputFile(nifFD, part, enableElementMode) result(this)
+        integer, intent(in) :: nifFD, enableElementMode
         character(*), intent(in) :: part
         
         character(128), dimension(:), allocatable :: lines
         character(32) readPart, element
         character(128) line
-        integer count, size
+        integer count, nodesize, elementsize, id
+        
+        elementsize = 0
         
         REWIND (nifFD)
         do
             READ (nifFD, "(A)", end=400) line
             if (INDEX(line, "*") > 0) then  ! 定義行
-                READ(line, *) element, readPart, size
+                
+                if (enableElementMode == 0) then
+                    READ(line, *) element, readPart, nodesize
+                else
+                    READ(line, *) element, readPart, nodesize, elementsize
+                end if
                 
                 if (INDEX(readPart, part) > 0) then ! 該当パートだったら読み込む
                     goto 300
@@ -50,19 +58,23 @@
         
 300     continue    ! 読み込みパート
         
-        ALLOCATE (lines(size))
-        ALLOCATE (this%nodeIds(size))
-        ALLOCATE (this%positions(size,3))
-        this%numofNodes = size
+        ALLOCATE (lines(nodesize))
+        ALLOCATE (this%nodeIds(nodesize))
+        ALLOCATE (this%positions(nodesize,3))
+        ALLOCATE (this%elements(elementsize, 4))
+        this%numofNodes = nodesize
         
-        do count = 1, size
+        do count = 1, nodesize + elementsize
             READ (nifFD, "(A)") lines(count)
         end do
         
-        do count = 1, size
+        do count = 1, nodesize
             READ (lines(count), *) this%nodeIds(count), this%positions(count,:)
         end do
-        
+    
+        do count = nodesize + 1, nodesize + elementsize
+            READ (lines(count), *) id, this%elements(count,:)
+        end do
         DEALLOCATE (lines)
         
 400     continue        

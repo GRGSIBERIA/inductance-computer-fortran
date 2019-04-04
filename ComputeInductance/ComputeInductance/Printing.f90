@@ -26,7 +26,7 @@
         integer ti
         
         WRITE (outputFD, *) "*Coil", ",", SIZE(inductances)
-        do ti = 1, SIZE(inductances)
+        do ti = 1, SIZE(times)
             WRITE (outputFD, *) times(ti), ",", fluxes(ti), ",", inductances(ti)
         end do
         

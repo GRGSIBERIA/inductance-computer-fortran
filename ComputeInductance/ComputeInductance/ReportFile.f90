@@ -71,7 +71,7 @@
         end do
         
         ! 時間のカウント
-        numofTimes = 0
+        numofTimes = 1
         do
             READ (reportFD, "(A)") line
             
@@ -85,11 +85,12 @@
         
         PRINT *, "number of times:", numofTimes
         
+        input%numofNodes = numofNodes
         ALLOCATE (this%positions(numofTimes, numofNodes, 3))
         ALLOCATE (this%times(numofTimes))
         ALLOCATE (this%nodeIds(numofNodes))
-        ALLOCATE (preparatePositions(numofTimes, input%numofNodes, 3))
-        ALLOCATE (preparateFlags(input%numofNodes))
+        ALLOCATE (preparatePositions(numofTimes, numofNodes, 3))
+        ALLOCATE (preparateFlags(numofNodes))
         
         this%positions = 0
         this%times = 0
