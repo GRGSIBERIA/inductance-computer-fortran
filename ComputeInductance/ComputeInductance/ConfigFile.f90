@@ -149,7 +149,7 @@
                 READ (line, *) option, param
                 this%nifPath = param
                 
-                CALL EXECUTE_COMMAND_LINE("python python/arrange.py " // this%configPath // " " // this%nifPath, wait = .true.)
+                CALL EXECUTE_COMMAND_LINE("python python/arrange_inpfile.py " // this%configPath // " " // this%nifPath, wait = .true.)
                 OPEN (startFD, file=param, status="old")    ! ファイルを開く前にコマンドを実行しないと，ファイルを開けない，という当たり前のエラーが出る
                 
                 this%nifFD = startFD

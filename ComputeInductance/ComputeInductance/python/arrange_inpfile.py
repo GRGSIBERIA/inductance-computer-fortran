@@ -116,9 +116,9 @@ def Main():
     outpath = "config.nif"  # normalized input node
 
     if not DEBUG:
-        regexp = r"\n\n\n\n"
-        confpath = re.sub(regexp, "\n\n", sys.argv[1])
-        outpath = re.sub(regexp, "\n\n", sys.argv[2])
+        regexp = r"\\\\"
+        confpath = re.sub(regexp, "\\", sys.argv[1])
+        outpath = re.sub(regexp, "\\", sys.argv[2])
 
     (inppath, elementmode) = get_inpfile(confpath)
     lines = get_lines(inppath)
