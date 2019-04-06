@@ -1,25 +1,39 @@
-!  ComputeVolumeticInductance.f90 
+ï»¿!  ComputeVolumeticInductance.f90 
 !
-!  ŠÖ”:
-!  ComputeVolumeticInductance - ƒRƒ“ƒ\[ƒ‹EƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÌƒGƒ“ƒgƒŠ[ƒ|ƒCƒ“ƒgB
+!  é–¢æ•°:
+!  ComputeVolumeticInductance - ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ãƒ»ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®ã‚¨ãƒ³ãƒˆãƒªãƒ¼ãƒã‚¤ãƒ³ãƒˆã€‚
 !
 
 !****************************************************************************
 !
-!  ƒvƒƒOƒ‰ƒ€: ComputeVolumeticInductance
+!  ãƒ—ãƒ­ã‚°ãƒ©ãƒ : ComputeVolumeticInductance
 !
-!  –Ú“I:  ƒRƒ“ƒ\[ƒ‹EƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÌƒGƒ“ƒgƒŠ[ƒ|ƒCƒ“ƒgB
+!  ç›®çš„:  ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ãƒ»ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®ã‚¨ãƒ³ãƒˆãƒªãƒ¼ãƒã‚¤ãƒ³ãƒˆã€‚
 !
 !****************************************************************************
 
     program ComputeVolumeticInductance
 
     implicit none
-
-    ! •Ï”
-
-    ! ComputeVolumeticInductance ‚Ì–{•¶
-    print *, 'Hello World'
+    
+    CALL Main()
+    
+    contains
+    
+    
+    subroutine Main()
+        USE InputFileClass
+        implicit none
+        integer fd
+        type(InputFile) inp
+        
+        fd = 20
+    
+        OPEN (fd, file="E:/temp/rhodes/forced displacement/Job-135.inp", status="old")
+        inp = init_InputFile(fd, "Coil")
+        CLOSE (fd)
+    end subroutine
+    
 
     end program ComputeVolumeticInductance
 
