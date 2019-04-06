@@ -1,21 +1,21 @@
 ========================================================================
-    Fortran コンソール・アプリケーション : "ComputeVolumeInductance" プロジェクトの概要
+    Fortran コンソール・アプリケーション : "ComputeVolumeticInductance" プロジェクトの概要
 ========================================================================
 
 インテル Fortran コンソール・アプリケーション・ウィザードは、
-"ComputeVolumeInductance" プロジェクトを作成しました。
+"ComputeVolumeticInductance" プロジェクトを作成しました。
 
 このファイルには、プロジェクトを構成している各ファイルの概要が
 含まれています。
 
-ComputeVolumeInductance.vfproj
+ComputeVolumeticInductance.vfproj
     アプリケーション・ウィザードを使用して生成した Fortran 
     プロジェクトのメイン・プロジェクト・ファイルです。
     ファイルを生成したインテル Fortran のバージョン情報、
     アプリケーション・ウィザードで選択したプラットフォーム、構成
     およびプロジェクト機能に関する情報が含まれています。
 
-ComputeVolumeInductance.f90
+ComputeVolumeticInductance.f90
     Fortran コンソール・アプリケーションのメイン・ソース・ファイルです。
     プログラムのエントリーポイントが含まれています。
 

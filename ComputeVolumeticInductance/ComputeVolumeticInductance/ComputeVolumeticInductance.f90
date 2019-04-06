@@ -1,25 +1,25 @@
-!  ComputeVolumeInductance.f90 
+!  ComputeVolumeticInductance.f90 
 !
 !  関数:
-!  ComputeVolumeInductance - コンソール・アプリケーションのエントリーポイント。
+!  ComputeVolumeticInductance - コンソール・アプリケーションのエントリーポイント。
 !
 
 !****************************************************************************
 !
-!  プログラム: ComputeVolumeInductance
+!  プログラム: ComputeVolumeticInductance
 !
 !  目的:  コンソール・アプリケーションのエントリーポイント。
 !
 !****************************************************************************
 
-    program ComputeVolumeInductance
+    program ComputeVolumeticInductance
 
     implicit none
 
     ! 変数
 
-    ! ComputeVolumeInductance の本文
+    ! ComputeVolumeticInductance の本文
     print *, 'Hello World'
 
-    end program ComputeVolumeInductance
+    end program ComputeVolumeticInductance
 
