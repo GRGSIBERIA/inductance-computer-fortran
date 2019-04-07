@@ -27,4 +27,22 @@
         
     end subroutine
     
+    ! 最初のレコード行を探してファイル位置を移動する
+    subroutine ScanFirstRecord(fd)
+        implicit none
+        integer, intent(in) :: fd
+        character*128 line
+        
+        ! 最初のレコード行を探す
+        do
+            READ (fd, "(A)") line
+            
+            if (INDEX(line, "  X  ") > 0) then
+                READ (fd, "()")
+                goto 100
+            end if
+        end do
+100     continue
+    end subroutine
+    
     end module

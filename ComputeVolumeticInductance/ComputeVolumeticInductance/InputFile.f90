@@ -3,14 +3,25 @@
     ! maximumNodeIdで入力データの枝切りを行う
     type InputFile
         character(32) partName
-        integer numofNodes, numofElements, maximumNodeId, minimumNodeId
+        integer numofNodes, numofElements, maximumNodeId
         double precision, dimension(:,:), allocatable :: positions  ! 3, 節点番号
         integer, dimension(:,:), allocatable :: elements            ! 4, 節点番号
         double precision, dimension(3) :: localPosition
         integer, dimension(:), allocatable :: referencedNodesFromElements   ! 要素節点から参照されている数
+    contains
+        procedure :: Release => Release_InputFile
     end type
     
     contains
+    
+    subroutine Release_InputFile(this)
+        implicit none
+        class(InputFile) this
+        
+        DEALLOCATE (this%positions)
+        DEALLOCATE (this%elements)
+        DEALLOCATE (this%referencedNodesFromElements)
+    end subroutine
     
     integer function CountNodePositionInFile(lines, part) result(count)
         implicit none
@@ -184,7 +195,7 @@
         CALL GetNodeAndElement(lines, nodePosition, this%numofNodes, this%positions, this%numofElements, this%elements)
         this%maximumNodeId = MAXVAL(this%elements)      ! 最低でも確保する必要のあるメモリを予測するために使う
         
-        ! 使用済みノードを記録する
+        ! 使用済み節点を記録する
         CALL ArrangeNodeFromElements(this%numofNodes, this%referencedNodesFromElements, this%numofElements, this%elements)
         
     end function

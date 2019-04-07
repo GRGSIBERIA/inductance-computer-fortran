@@ -24,19 +24,25 @@
     subroutine Main()
         USE FileUtil
         USE InputFileClass
+        USE CommonReportClass
         
         implicit none
-        integer fd
-        type(InputFile) inp
-        character*128, dimension(:), allocatable :: inpLines
+        integer, parameter :: fd = 20, comfd = 21
         
-        fd = 20
+        type(InputFile) inp
+        type(CommonReport) com
+        
+        character*128, dimension(:), allocatable :: inpLines
     
-        OPEN (fd, file="E:/temp/rhodes/forced displacement/Job-135.inp", status="old")
+        OPEN (fd, file="E:/temp/rhodes/odb/C3-17-Gapped-Detail-S45C.inp", status="old")
         CALL GetLines(fd, inpLines)
-        inp = init_InputFile(inpLines, "Coil")
+        inp = init_InputFile(inpLines, "coil")
+        
+        OPEN (comfd, file="E:/temp/rhodes/odb/tine.rpt", status="old")
+        com = init_CommonReport(comfd)
         
         CLOSE (fd)
+        CLOSE (comfd)
     end subroutine
     
 
