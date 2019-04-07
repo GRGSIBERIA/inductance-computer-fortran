@@ -22,15 +22,20 @@
     
     
     subroutine Main()
+        USE FileUtil
         USE InputFileClass
+        
         implicit none
         integer fd
         type(InputFile) inp
+        character*128, dimension(:), allocatable :: inpLines
         
         fd = 20
     
         OPEN (fd, file="E:/temp/rhodes/forced displacement/Job-135.inp", status="old")
-        inp = init_InputFile(fd, "Coil")
+        CALL GetLines(fd, inpLines)
+        inp = init_InputFile(inpLines, "Coil")
+        
         CLOSE (fd)
     end subroutine
     

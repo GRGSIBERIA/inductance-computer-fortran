@@ -2,10 +2,12 @@
     
     ! maximumNodeIdで入力データの枝切りを行う
     type InputFile
+        character(32) partName
         integer numofNodes, numofElements, maximumNodeId, minimumNodeId
         double precision, dimension(:,:), allocatable :: positions  ! 3, 節点番号
         integer, dimension(:,:), allocatable :: elements            ! 4, 節点番号
         double precision, dimension(3) :: localPosition
+        integer, dimension(:), allocatable :: referencedNodesFromElements   ! 要素節点から参照されている数
     end type
     
     contains
@@ -71,7 +73,6 @@
                 if (INDEX(lines(i+1), "*End Instance") > 0 .or. INDEX(lines(i+1), "*Node") > 0) then
                     goto 500
                 end if
-                PRINT *, lines(i+1)
                 READ (lines(i+1), *) localPosition(:)
             end if
             
@@ -114,6 +115,7 @@
         
     end subroutine
     
+    ! 節点と要素をinpファイルから取得する
     subroutine GetNodeAndElement(lines, head, numofNodes, positions, numofElements, elements)
         implicit none
         character*128, dimension(:), intent(in) :: lines
@@ -126,13 +128,11 @@
         i = 1
         head = head + 1
         
-        PRINT *, lines(head)
         do i = 1, numofNodes
             READ (lines(head), *) temp, positions(:,i)
             head = head + 1
         end do
         
-        PRINT *, lines(head)
         if (INDEX(lines(head), "*Element") > 0) then
             head = head + 1
         else
@@ -145,54 +145,47 @@
         end do
     end subroutine
     
-    
-    ! ファイルの内容をすべてメモリ内に配置する
-    subroutine GetLines(fd, lines)
+    subroutine ArrangeNodeFromElements(numofNodes, reference, numofElements, elements)
         implicit none
-        integer, intent(in) :: fd
-        character*128, dimension(:), allocatable, intent(out) :: lines
-        integer numofLines, i
+        integer, intent(in) :: numofNodes, numofElements
+        integer, dimension(numofNodes), intent(out) :: reference
+        integer, dimension(4, numofElements), intent(in) :: elements
+        integer i, j
         
-        numofLines = 0
+        reference = 0
         
-        REWIND (fd)
-        do
-            READ (fd, "()", end=400)
-            numofLines = numofLines + 1
+        ! 使用済み節点を記録する
+        do i = 1, numofElements
+            do j = 1, 4
+                reference(elements(j, i)) = reference(elements(j, i)) + 1
+            end do
         end do
-400     continue
-        
-        ALLOCATE (lines(numofLines))
-        
-        REWIND (fd)
-        do i = 1, numofLines
-            READ (fd, "(A)") lines(i)
-        end do
-        
     end subroutine
     
-    type(InputFile) function init_InputFile(fd, part) result(this)
+    type(InputFile) function init_InputFile(lines, part) result(this)
         implicit none
-        integer, intent(in) :: fd
         character(*), intent(in) :: part
-        
-        character*128, dimension(:), allocatable :: lines
+        character*128, dimension(:), intent(in) :: lines
         
         integer nodePosition
         
-        CALL GetLines(fd, lines)    ! あらかじめファイルの中身をメモリに展開する
         nodePosition = CountNodePositionInFile(lines, part)     ! partに対応する*Nodeの行番号を取得する
         
         ! 節点と要素の数を数えつつ，ローカル座標を探索する
         CALL CountNumofNodeAndElement(lines, nodePosition, this%numofNodes, this%numofElements)
         CALL GetLocalPosition(lines, part, this%localPosition)
         
+        this%partName = part
         ALLOCATE (this%positions(3,this%numofNodes))
         ALLOCATE (this%elements(4,this%numofElements))
+        ALLOCATE (this%referencedNodesFromElements(this%numofNodes))
         
         ! 節点と要素を入力する
         CALL GetNodeAndElement(lines, nodePosition, this%numofNodes, this%positions, this%numofElements, this%elements)
         this%maximumNodeId = MAXVAL(this%elements)      ! 最低でも確保する必要のあるメモリを予測するために使う
+        
+        ! 使用済みノードを記録する
+        CALL ArrangeNodeFromElements(this%numofNodes, this%referencedNodesFromElements, this%numofElements, this%elements)
         
     end function
     
