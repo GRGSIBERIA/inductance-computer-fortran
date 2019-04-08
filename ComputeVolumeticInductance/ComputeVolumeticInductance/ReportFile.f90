@@ -8,24 +8,13 @@
     
     contains
     
-    ! ヘッダを探索してその文字列を返す手続き
-    subroutine ScanHeader(lines, num, header)
+    ! Xの位置にnumがある状態でヘッダを作成する
+    subroutine CombineHeader(lines, num, xpos, header)
+        implicit none
         character*128, dimension(:), intent(in) :: lines
-        integer, intent(inout) :: num
+        integer, intent(in) :: num, xpos
         character*128, intent(out) :: header
-        integer xpos, i
-        
-        header = ""
-        
-        ! Xが存在する場所を探す
-        do
-            num = num + 1
-            xpos = INDEX(lines(num), "  X  ")
-            if (xpos > 0) then
-                goto 100
-            end if
-        end do
-100     continue
+        integer i
         
         header = TRIM(ADJUSTL(lines(num)(xpos+5:)))
         
@@ -42,6 +31,69 @@
     end subroutine
     
     
+    ! 記録されている節点数を返す
+    integer function TotalRecordingNodes(lines) result(total)
+        implicit none
+        character*128, dimension(:), intent(in) :: lines
+        integer i
+        total = 0
+        
+        do i = 1, SIZE(lines)
+            if (INDEX(lines(i), "  X  ") > 0) then
+                total = total + 1
+            end if
+        end do
+    end function
+    
+    
+    ! ヘッダ文字列から節点番号だけを取り出す
+    integer function ExtractNodeId(header) result(nodeid)
+        implicit none
+        character*128, intent(in) :: header
+        integer xpos
+        
+        xpos = INDEX(header, "N: ")
+        READ (header(xpos+3:), "(I)") nodeid
+    end function
+    
+    
+    ! ヘッダ文字列から座標軸IDだけを取り出す
+    integer function ExtractAxisId(header) result(axisid)
+        implicit none
+        character*128, intent(in) :: header
+        integer xpos
+        
+        xpos = INDEX(header, "U:U")
+        READ (header(xpos+3:xpos+4), "(I)") axisid
+    end function
+    
+    
+    ! ヘッダのみをスキャンしつつ，節点番号，座標軸番号，記録されている位置を記録する
+    subroutine ScanNodeIds(lines, nodeIds, axisIds, xlinePoses)
+        implicit none
+        character*128, dimension(:), intent(in) :: lines
+        integer, dimension(:), intent(out) :: nodeIds, axisIds, xlinePoses
+        character*128 header
+        integer i, id, num, xpos
+        
+        axisIds = 0
+        nodeIds = 0
+        num = 1
+        
+        do i = 1, SIZE(lines)
+            xpos = INDEX(lines(i), "  X  ")
+            if (xpos > 0) then
+                CALL CombineHeader(lines, i, xpos, header)
+                nodeIds(num) = ExtractNodeId(header)
+                axisIds(num) = ExtractAxisId(header)
+                xlinePoses(num) = i + 2
+                num = num + 1
+            end if
+            
+        end do
+        
+    end subroutine
+    
     
     ! 個別のレポートファイルのデータ
     type(ReportFile) function init_ReportFile(fd, input, com) result(this)
@@ -55,14 +107,28 @@
         type(InputFile), intent(in) :: input
         type(CommonReport), intent(in) :: com
         
-        character*128 header    ! テスト
+        character*128, dimension(:), allocatable :: headers
+        integer, dimension(:), allocatable :: nodeIds, axisIds, xlinePoses
+        
+        integer totalNodes
         integer num
         num = 1
         
         CALL GetLines(fd, lines)
-        CALL ScanHeader(lines, num, header)
+        totalNodes = TotalRecordingNodes(lines)
+        
+        ALLOCATE (headers(totalNodes))
+        ALLOCATE (nodeIds(totalNodes))
+        ALLOCATE (axisIds(totalNodes))
+        ALLOCATE (xlinePoses(totalNodes))
+        
+        CALL ScanNodeIds(lines, nodeIds, axisIds, xlinePoses)
         
         DEALLOCATE (lines)
+        DEALLOCATE (headers)
+        DEALLOCATE (nodeIds)
+        DEALLOCATE (axisIds)
+        DEALLOCATE (xlinePoses)
         
     end function
     
