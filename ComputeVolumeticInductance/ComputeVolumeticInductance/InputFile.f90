@@ -41,6 +41,11 @@
             i = i + 1
             count = count + 1
             
+            if (SIZE(lines) < i) then
+                PRINT *, part, "IS NOT FOUND."
+                stop "TERMINATE PROGRAM"
+            end if
+            
             ! Partがきたなら次にNodeだと本体が来る
             if (INDEX(lines(i), "*Part") > 0 .and. INDEX(lines(i), part) > 0) then
                 i = i + 1

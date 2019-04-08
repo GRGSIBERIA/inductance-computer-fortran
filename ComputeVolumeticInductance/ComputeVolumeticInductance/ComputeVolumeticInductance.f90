@@ -39,7 +39,7 @@
         OPEN (fd, file="E:/temp/rhodes/odb/C3-17-Gapped-Detail-S45C.inp", status="old")
         
         CALL GetLines(fd, inpLines)
-        inp = init_InputFile(inpLines, "coil")
+        inp = init_InputFile(inpLines, "geometory")
         
         OPEN (comfd, file="E:/temp/rhodes/odb/tine.rpt", status="old")
         com = init_CommonReport(comfd)

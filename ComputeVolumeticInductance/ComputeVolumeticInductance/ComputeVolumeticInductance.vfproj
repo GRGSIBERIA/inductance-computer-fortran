@@ -29,6 +29,7 @@
 		<File RelativePath=".\ComputeVolumeticInductance.f90"/>
 		<File RelativePath=".\FileUtil.f90"/>
 		<File RelativePath=".\InputFile.f90"/>
+		<File RelativePath=".\Oscillator.f90"/>
 		<File RelativePath=".\ReportFile.f90"/></Filter>
 		<Filter Name="ヘッダーファイル" Filter="fi;fd"/>
 		<Filter Name="リソースファイル" Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"/>

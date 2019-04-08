@@ -3,6 +3,7 @@
     
     type ReportFile
         character*32 partName
+        integer numofTimes, numofNodes      ! numofNodes は report%maximumNodeIdに依存しているので注意
         double precision, dimension(:,:,:), allocatable :: positions    ! XYZ,時間,節点番号 => 節点番号はreport%maximumNodeIdに依存
     end type
     
@@ -86,10 +87,31 @@
                 CALL CombineHeader(lines, i, xpos, header)
                 nodeIds(num) = ExtractNodeId(header)
                 axisIds(num) = ExtractAxisId(header)
-                xlinePoses(num) = i + 2
+                xlinePoses(num) = i + 1     ! timeidで加算する手前，本来の位置より-1あたり
                 num = num + 1
             end if
-            
+        end do
+        
+    end subroutine
+    
+    ! positionsに記録していく
+    subroutine RecordingPositions(lines, nodeIds, axisIds, xlinePoses, positions, numofTimes, maximumNodeId)
+        implicit none
+        character*128, dimension(:), intent(in) :: lines
+        integer, dimension(:), intent(in) :: nodeIds, axisIds, xlinePoses
+        double precision, dimension(:,:,:), intent(out) :: positions
+        integer, intent(in) :: numofTimes, maximumNodeId
+        integer i, timeid
+        double precision time
+        
+        positions = 0
+        
+        do i = 1, SIZE(xlinePoses)
+            do timeid = 1, numofTimes
+                if (nodeIds(i) <= maximumNodeId) then
+                    READ (lines(xlinePoses(i)+timeid), *) time, positions(axisIds(i), timeid, nodeIds(i))
+                end if
+            end do
         end do
         
     end subroutine
@@ -114,6 +136,7 @@
         integer num
         num = 1
         
+        ! すべての行を取得しておく
         CALL GetLines(fd, lines)
         totalNodes = TotalRecordingNodes(lines)
         
@@ -122,7 +145,13 @@
         ALLOCATE (axisIds(totalNodes))
         ALLOCATE (xlinePoses(totalNodes))
         
+        ALLOCATE (this%positions(3,com%numofTimes,input%maximumNodeId))
+        this%positions = 0
+        this%numofTimes = com%numofTimes
+        this%numofNodes = input%maximumNodeId
+        
         CALL ScanNodeIds(lines, nodeIds, axisIds, xlinePoses)
+        CALL RecordingPositions(lines, nodeIds, axisIds, xlinePoses, this%positions, com%numofTimes, input%maximumNodeId)
         
         DEALLOCATE (lines)
         DEALLOCATE (headers)
