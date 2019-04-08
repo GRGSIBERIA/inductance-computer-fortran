@@ -4,9 +4,8 @@
     ! 振動体クラス
     type Oscillator
         character*32 partName
-        integer numofTimes, numofElements, numofNodes, numofElements
+        integer numofTimes, numofElements, numofNodes                   ! numofNodesはelementsの最大値
         double precision, dimension(:,:,:), allocatable :: positions    ! パート単位でレポートの座標値
-        integer, dimension(:,:), allocatable :: elements
         double precision, dimension(:,:,:), allocatable :: centroids     ! 重心
         double precision, dimension(:,:), allocatable :: volumes         ! 体積
     end type
@@ -81,7 +80,6 @@
         this%numofTimes = com%numofTimes
         this%numofNodes = input%maximumNodeId       ! 要素節点として登録されている最大値を代入
         this%numofElements = input%numofElements
-        this%elements = input%elements
         
         do i = 1, SIZE(reports)
             if (part == reports(i)%partName .and. part == input%partName) then
