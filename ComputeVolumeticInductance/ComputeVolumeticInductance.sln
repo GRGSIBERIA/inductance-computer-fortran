@@ -7,12 +7,18 @@ Project("{6989167D-11E4-40FE-8C1A-2192A86A7E90}") = "ComputeVolumeticInductance"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C920A162-E0A2-4212-BE13-B8F45BCC8BD9}.Debug|x64.ActiveCfg = Debug|x64
+		{C920A162-E0A2-4212-BE13-B8F45BCC8BD9}.Debug|x64.Build.0 = Debug|x64
 		{C920A162-E0A2-4212-BE13-B8F45BCC8BD9}.Debug|x86.ActiveCfg = Debug|Win32
 		{C920A162-E0A2-4212-BE13-B8F45BCC8BD9}.Debug|x86.Build.0 = Debug|Win32
+		{C920A162-E0A2-4212-BE13-B8F45BCC8BD9}.Release|x64.ActiveCfg = Release|Win32
+		{C920A162-E0A2-4212-BE13-B8F45BCC8BD9}.Release|x64.Build.0 = Release|Win32
 		{C920A162-E0A2-4212-BE13-B8F45BCC8BD9}.Release|x86.ActiveCfg = Release|Win32
 		{C920A162-E0A2-4212-BE13-B8F45BCC8BD9}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection

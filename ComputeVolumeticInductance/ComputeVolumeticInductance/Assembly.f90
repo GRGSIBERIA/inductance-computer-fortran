@@ -1,13 +1,13 @@
-﻿    module OscillatorClass
+﻿    module AssemblyClass
     implicit none
     
     ! 振動体クラス
-    type Oscillator
+    type Assembly
         character*32 partName
         integer numofTimes, numofElements, numofNodes                   ! numofNodesはelementsの最大値
-        double precision, dimension(:,:,:), allocatable :: positions    ! パート単位でレポートの座標値
-        double precision, dimension(:,:,:), allocatable :: centroids     ! 重心
-        double precision, dimension(:,:), allocatable :: volumes         ! 体積
+        double precision, dimension(:,:,:), allocatable :: positions    ! パート単位でレポートの座標値; 座標番号，時間番号，節点番号
+        double precision, dimension(:,:,:), allocatable :: centroids    ! 重心
+        double precision, dimension(:,:), allocatable :: volumes        ! 体積
     end type
     
     contains
@@ -23,7 +23,7 @@
     
     
     ! 重心を設定する関数
-    subroutine SetCentroidAndVolume(centroid, volumes, numofElements, elements, numofTimes, numofNodes, positions)
+    subroutine SetCentroidAndVolume(centroids, volumes, numofElements, elements, numofTimes, numofNodes, positions)
         implicit none
         integer, intent(in) :: numofElements, numofTimes, numofNodes
         double precision, dimension(3,numofTimes,numofElements), intent(out) :: centroids
@@ -62,10 +62,11 @@
     
     ! numofNodes は maximumNodeIdと同じ数を宣言している
     ! inputもパートごとに存在しているので取扱に注意する
-    type(Oscillator) function init_Oscillator(part, reports, input, com) result(this)
+    type(Assembly) function init_Assembly(part, reports, input, com) result(this)
         USE InputFileClass
         USE CommonReportClass
         USE ReportFileClass
+        
         implicit none
         character*32, intent(in) :: part
         type(ReportFile), dimension(:), intent(in) :: reports
@@ -75,11 +76,11 @@
         integer i
         
         this%partName = part
-        ALLOCATE (this%positions(3,numofTimes, numofNodes))
         this%positions = 0
         this%numofTimes = com%numofTimes
         this%numofNodes = input%maximumNodeId       ! 要素節点として登録されている最大値を代入
         this%numofElements = input%numofElements
+        ALLOCATE (this%positions(3, this%numofTimes, this%numofNodes))
         
         do i = 1, SIZE(reports)
             if (part == reports(i)%partName .and. part == input%partName) then
@@ -91,6 +92,7 @@
         ALLOCATE (this%volumes(this%numofTimes,this%numofElements))
         
         ! まだ重心は設定してないよ！
+        CALL SetCentroidAndVolume(this%centroids, this%volumes, this%numofElements, input%elements, com%numofTimes, input%maximumNodeId, this%positions)
     end function
     
     end module
