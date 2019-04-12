@@ -19,7 +19,7 @@
         implicit none
         integer, intent(in) :: fd
         integer, intent(out) :: numofParts, numofCoils
-        character*256 line
+        character*512 line
         
         numofParts = 0
         numofCoils = 0
@@ -34,13 +34,27 @@
 100     continue
     end subroutine
     
-    type(Config) function init_Config(path) result(this)
+    subroutine SetFD(startFD, targetFD)
         implicit none
-        character*128, intent(in) :: path
-        integer, parameter :: configFD = 20
-        character*256 line
+        integer, intent(inout) :: startFD
+        integer, intent(out) :: targetFD
+        targetFD = startFD
+        startFD = startFD + 1
+    end subroutine
+    
+    type(Config) function init_Config(startFD, confpath) result(this)
+        implicit none
+        character*256, intent(in) :: confpath
+        integer, intent(in) :: startFD
+        integer configFD, partCount, coilCount
+        character*512 line
+        character*8 element
+        character*32 name
+        character*256 path, btmpath
         
-        OPEN (configFD, file=path, status="old")
+        CALL SetFD(startFD, configFD)
+        
+        OPEN (configFD, file=confpath, status="old")
         
         ! ex.
         ! *inpfile, E:/hogehoge.inp
@@ -68,7 +82,35 @@
         
         REWIND (configFD)
         
+        partCount = 1
+        coilCount = 1
+        
         do
+            READ (configFD, "(A)") line
+            
+            if (INDEX(line, "*inpfile") > 0) then 
+                CALL SetFD(startFD, this%inputFD)
+                READ (line, *) element, path
+                OPEN (this%inputFD, file=path, status="old")
+                
+            else if (INDEX(line, "*part") > 0) then
+                CALL SetFD(startFD, this%partFDs(partCount))
+                READ (line, *) element, this%partNames(partCount), path
+                OPEN (this%partFDs(partCount), file=path, status="old"))
+                partCount = partCount + 1
+                
+            else if (INDEX(line, "*coil") > 0) then
+                CALL SetFD(startFD, this%coilTopFDs(coilCount))
+                CALL SetFD(startFD, this%coilBottomFDs(coilCount))
+                
+                READ (line, *) element, this%coilNames(coilCount), path, btmpath
+                
+                OPEN (this%coilTopFDs(coilCount), file=path, status="old")
+                OPEN (this%coilBottomFDs(coilCount), file=path, status="old")
+                
+                coilCount = coilCount + 1
+                
+            end if
             
         end do
 200     continue        
