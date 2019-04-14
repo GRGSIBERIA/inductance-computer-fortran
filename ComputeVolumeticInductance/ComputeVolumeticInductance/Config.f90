@@ -36,7 +36,7 @@
     
     subroutine SetFD(startFD, targetFD)
         implicit none
-        integer, intent(inout) :: startFD
+        integer, intent(out) :: startFD
         integer, intent(out) :: targetFD
         targetFD = startFD
         startFD = startFD + 1
@@ -44,9 +44,8 @@
     
     type(Config) function init_Config(startFD, confpath) result(this)
         implicit none
-        character*256, intent(in) :: confpath
-        integer, intent(in) :: startFD
-        integer configFD, partCount, coilCount
+        character(*), intent(in) :: confpath
+        integer startFD, configFD, partCount, coilCount
         character*512 line
         character*8 element
         character*32 name
@@ -85,8 +84,9 @@
         partCount = 1
         coilCount = 1
         
+        ! 設定ごとに分岐してFDを割り振る
         do
-            READ (configFD, "(A)") line
+            READ (configFD, "(A)", end=200) line
             
             if (INDEX(line, "*inpfile") > 0) then 
                 CALL SetFD(startFD, this%inputFD)
@@ -96,7 +96,7 @@
             else if (INDEX(line, "*part") > 0) then
                 CALL SetFD(startFD, this%partFDs(partCount))
                 READ (line, *) element, this%partNames(partCount), path
-                OPEN (this%partFDs(partCount), file=path, status="old"))
+                OPEN (this%partFDs(partCount), file=path, status="old")
                 partCount = partCount + 1
                 
             else if (INDEX(line, "*coil") > 0) then
@@ -126,8 +126,12 @@
         integer i
         
         CLOSE (this%inputFD)
-        do i = 1, SIZE(this%reportFDs)
-            CLOSE (this%reportFDs(i))
+        do i = 1, this%numofParts
+            CLOSE (this%partFDs(i))
+        end do
+        do i = 1, this%numofCoils
+            CLOSE (this%coilTopFDs(i))
+            CLOSE (this%coilBottomFDs(i))
         end do
         
         DEALLOCATE (this%partFDs)

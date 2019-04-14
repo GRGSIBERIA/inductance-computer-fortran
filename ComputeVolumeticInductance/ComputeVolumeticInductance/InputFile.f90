@@ -28,7 +28,6 @@
         character(*), intent(in) :: part
         
         character*128, dimension(:), intent(in) :: lines
-        character*128 line
         
         integer i
         
