@@ -54,7 +54,22 @@
         type(Config), intent(in) :: config
         type(CommonReport) comrep
         
-        com = init_CommonReport()
+        ! 全く指定されていない場合はプログラムを落とす
+        if (SIZE(conf%partFDs) <= 0) then
+            PRINT *, "DO NOT APPOINT THE PART OF THE ELEMENT IN THE CONFIG FILE."
+            stop
+        end if
+        
+        ! コイルが指定されていない場合も落とす
+        if (SIZE(conf%coilTopFDs) <= 0 .or. SIZE(conf%coilBottomFDs) <= 0) then
+            PRINT *, "DO NOT APPOINT THE COIL OF THE ELEMENT IN THE CONFIG FILE."
+            PRINT *, "*coil, part name, top path, bottom path"
+            stop
+        end if
+        
+        com = init_CommonReport(config%partFDs(1))
+        
+        
     end subroutine
     
     subroutine Main()
