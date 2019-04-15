@@ -47,12 +47,19 @@
         
     end subroutine
     
-    subroutine PrepareReportFiles(config)
+    subroutine PreparePartReportFiles(conf, partInputs, reports, assemblies)
         USE CommonReportClass
         USE ConfigClass
+        USE ReportFileClass
+        USE InputFileClass
+        USE AssemblyClass
         implicit none
-        type(Config), intent(in) :: config
-        type(CommonReport) comrep
+        type(Config), intent(in) :: conf
+        type(InputFile), dimension(:), intent(in) :: partInputs
+        type(CommonReport) com
+        type(ReportFile), dimension(:), allocatable, intent(out) :: reports
+        type(Assembly), dimension(:), allocatable, intent(out) :: assemblies
+        integer i, j
         
         ! 全く指定されていない場合はプログラムを落とす
         if (SIZE(conf%partFDs) <= 0) then
@@ -67,7 +74,17 @@
             stop
         end if
         
-        com = init_CommonReport(config%partFDs(1))
+        ! レポートの領域を確保して
+        ALLOCATE (reports(SIZE(partInputs)))
+        ALLOCATE (assemblies(SIZE(partInputs)))
+        com = init_CommonReport(conf%partFDs(1))
+        do i = 1, SIZE(conf%partFDs)
+            reports(i) = init_ReportFile(conf%partFDs(i), partInputs(i), com)
+        end do
+        do i = 1, SIZE(conf%partFDs)
+            assemblies(i) = init_Assembly(reports(i), partInputs(i), com)
+        end do
+        
         
         
     end subroutine
@@ -81,42 +98,26 @@
         USE ConfigClass
         
         implicit none
-        integer, parameter :: fd = 20, comfd = 21
         type(InputFile), dimension(:), allocatable :: partInputs, coilInputs
         integer startFD
         
         type(Config) conf
-        
-        !type(InputFile) inp
-        !type(CommonReport) com
-        !type(ReportFile) report
-        !type(Assembly) assembly
-        
-        character*128, dimension(:), allocatable :: inpLines
+        type(ReportFile), dimension(:), allocatable :: partReports
+        type(Assembly), dimension(:), allocatable :: partAssemblies
         
         startFD = 22
         conf = init_Config(startFD, "config.conf")
     
         ! INPファイルの読み込み
         CALL PrepareInputFile(conf, partInputs, coilInputs)
-        
-        ! RPTファイルの読み込み
-        !OPEN (comfd, file="E:/temp/rhodes/odb/tine.rpt", status="old")
-        !com = init_CommonReport(comfd)
-        !report = init_ReportFile(comfd, inp, com)
-        
-        
+        PRINT *, "PREPARED LOADING INPUT FILE"
         
         ! Assemblyの構築
-        
+        CALL PreparePartReportFiles(conf, partInputs, partReports, partAssemblies)
+        PRINT *, "PREPARED LOADING PART REPORT FILE"
         
         ! Coilの構築
         
-        !DEALLOCATE (inpLines)
-        
-        
-        !CLOSE (fd)
-        !CLOSE (comfd)
         CALL conf%Release()
     end subroutine
     

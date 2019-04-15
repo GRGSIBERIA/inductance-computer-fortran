@@ -5,6 +5,7 @@
         character*32 partName
         integer numofTimes, numofNodes      ! numofNodes は report%maximumNodeIdに依存しているので注意
         double precision, dimension(:,:,:), allocatable :: positions    ! XYZ,時間,節点番号 => 節点番号はreport%maximumNodeIdに依存
+        integer, dimension(:), allocatable :: nodeIds
     end type
     
     contains
@@ -130,7 +131,7 @@
         type(CommonReport), intent(in) :: com
         
         character*128, dimension(:), allocatable :: headers
-        integer, dimension(:), allocatable :: nodeIds, axisIds, xlinePoses
+        integer, dimension(:), allocatable :: axisIds, xlinePoses
         
         integer totalNodes
         integer num
@@ -141,7 +142,7 @@
         totalNodes = TotalRecordingNodes(lines)
         
         ALLOCATE (headers(totalNodes))
-        ALLOCATE (nodeIds(totalNodes))
+        ALLOCATE (this%nodeIds(totalNodes))
         ALLOCATE (axisIds(totalNodes))
         ALLOCATE (xlinePoses(totalNodes))
         
@@ -149,13 +150,13 @@
         this%positions = 0
         this%numofTimes = com%numofTimes
         this%numofNodes = input%maximumNodeId
+        this%partName = input%partName
         
-        CALL ScanNodeIds(lines, nodeIds, axisIds, xlinePoses)
-        CALL RecordingPositions(lines, nodeIds, axisIds, xlinePoses, this%positions, com%numofTimes, input%maximumNodeId)
+        CALL ScanNodeIds(lines, this%nodeIds, axisIds, xlinePoses)
+        CALL RecordingPositions(lines, this%nodeIds, axisIds, xlinePoses, this%positions, com%numofTimes, input%maximumNodeId)
         
         DEALLOCATE (lines)
         DEALLOCATE (headers)
-        DEALLOCATE (nodeIds)
         DEALLOCATE (axisIds)
         DEALLOCATE (xlinePoses)
         

@@ -62,36 +62,36 @@
     
     ! numofNodes は maximumNodeIdと同じ数を宣言している
     ! inputもパートごとに存在しているので取扱に注意する
-    type(Assembly) function init_Assembly(part, reports, input, com) result(this)
+    type(Assembly) function init_Assembly(report, input, com) result(this)
         USE InputFileClass
         USE CommonReportClass
         USE ReportFileClass
         
         implicit none
-        character*32, intent(in) :: part
-        type(ReportFile), dimension(:), intent(in) :: reports
+        type(ReportFile), intent(in) :: report
         type(InputFile), intent(in) :: input
         type(CommonReport), intent(in) :: com
         
-        integer i
+        integer ni, ti
         
-        this%partName = part
-        this%positions = 0
+        this%partName = report%partName
         this%numofTimes = com%numofTimes
         this%numofNodes = input%maximumNodeId       ! 要素節点として登録されている最大値を代入
         this%numofElements = input%numofElements
+        
         ALLOCATE (this%positions(3, this%numofTimes, this%numofNodes))
         
-        do i = 1, SIZE(reports)
-            if (part == reports(i)%partName .and. part == input%partName) then
-                this%positions = this%positions + reports(i)%positions
-            end if
+        ! ローカル座標を足し合わせる処理
+        do ni = 1, input%maximumNodeId
+            do ti = 1, com%numofTimes
+                this%positions(:,ti,ni) = report%positions(:,ti,ni) + input%localPosition
+            end do
         end do
         
         ALLOCATE (this%centroids(3,this%numofTimes,this%numofElements))
         ALLOCATE (this%volumes(this%numofTimes,this%numofElements))
         
-        ! まだ重心は設定してないよ！
+        ! 重心をここで設定
         CALL SetCentroidAndVolume(this%centroids, this%volumes, this%numofElements, input%elements, com%numofTimes, input%maximumNodeId, this%positions)
     end function
     
