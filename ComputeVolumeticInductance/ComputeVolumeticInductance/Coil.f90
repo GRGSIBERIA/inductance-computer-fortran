@@ -3,7 +3,8 @@
     
     type Coil
         double precision, dimension(:,:), allocatable :: positions, forwards, rights  ! 次元, 時間
-        double precision :: height, radius
+        double precision, dimension(:,:), allocatable :: topCentroid, bottomCentroid
+        double precision :: height, radius  ! 半径と長さは初期状態から変化しないと仮定する
     end type
     
     contains
@@ -35,6 +36,7 @@
     end function
     
     function ComputeForward(numofTimes, top, bottom) result(forward)
+        USE Math
         implicit none
         integer, intent(in) :: numofTimes
         double precision, dimension(3,numofTimes), intent(in) :: top, bottom
@@ -46,7 +48,7 @@
         ! 適当な前向きベクトルを取得する
         forward = top - bottom
         do ti = 1, numofTimes
-            forward(:,ti) = forward(:,ti) / SQRT(DOT_PRODUCT(forward(:,ti), forward(:,ti)))
+            forward(:,ti) = Normalize(forward(:,ti))
         end do
     end function
     
@@ -69,11 +71,42 @@
         
         ! 直角なベクトルをベースにして外積で右手のベクトルを作成する
         do ti = 1, numofTimes
-            rights(:,numofTimes) = Cross(forwards(:,numofTimes), rights(:,numofTimes)
+            rights(:,numofTimes) = Cross(forwards(:,numofTimes), rights(:,numofTimes))
         end do
         
     end function
     
+    double precision function ComputeRadius(report, centroid) result(radius)
+        USE Math
+        USE ReportFileClass
+        implicit none
+        type(ReportFile), intent(in) :: report
+        double precision, dimension(3), intent(in) :: centroid
+        double precision, dimension(3) :: vector
+        integer ni
+        double precision temp
+        
+        radius = 0
+        
+        ! 重心から最も遠い節点を半径とする
+        do ni = 1, report%numofNodes
+            if (report%enableNodeIds(ni) == 1) then
+                temp = Length(report%positions(:,1,ni) - centroid)
+                if (radius < temp) then
+                    radius = temp
+                end if
+            end if
+        end do
+    
+    end function
+    
+    double precision function ComputeHeight(topCentroid, bottomCentroid) result(height)
+        USE Math
+        implicit none
+        double precision, dimension(3), intent(in) :: topCentroid, bottomCentroid
+        
+        ! 重心との差から長さを出せば半径が求まる
+        height = Length(topCentroid - bottomCentroid)
     end function
     
     type(Coil) function init_Coil(input, topReport, bottomReport, com) result(this)
@@ -92,13 +125,18 @@
         ALLOCATE (this%rights(3,com%numofTimes))
         
         ! 各レポートの重心を求めてコイルの中心座標を決める
-        topCentroid = ComputeCentroid(topReport)
-        bottomCentroid = ComputeCentroid(bottomReport)
-        this%positions = (topCentroid - bottomCentroid) * 0.5d0 + bottomCentroid
-        this%forwards = ComputeForward(com%numofTimes, topCentroid, bottomCentroid)
+        this%topCentroid = ComputeCentroid(topReport)
+        this%bottomCentroid = ComputeCentroid(bottomReport)
+        this%positions = (this%topCentroid - this%bottomCentroid) * 0.5d0 + this%bottomCentroid
         
-        DEALLOCATE (topCentroid)
-        DEALLOCATE (bottomCentroid)
+        ! 正面と右手を計算する
+        this%forwards = ComputeForward(com%numofTimes, this%topCentroid, this%bottomCentroid)
+        this%rights = ComputeRight(com%numofTimes, this%forwards)
+        
+        ! 半径と長さは何があっても変わらないものとする
+        this%radius = ComputeRadius(topReport, topCentroid(:,1))
+        this%height = ComputeHeight(topCentroid(:,1), bottomCentroid(:,1))
+        
     end function
     
     end module
