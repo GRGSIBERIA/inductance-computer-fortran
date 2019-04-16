@@ -4,8 +4,9 @@
     type ReportFile
         character*32 partName
         integer numofTimes, numofNodes      ! numofNodes は report%maximumNodeIdに依存しているので注意
+        integer numofEnableNodes
         double precision, dimension(:,:,:), allocatable :: positions    ! XYZ,時間,節点番号 => 節点番号はreport%maximumNodeIdに依存
-        integer, dimension(:), allocatable :: nodeIds
+        integer, dimension(:), allocatable :: enableNodeIds  ! maximumNodeIdに依存
     end type
     
     contains
@@ -131,10 +132,9 @@
         type(CommonReport), intent(in) :: com
         
         character*128, dimension(:), allocatable :: headers
-        integer, dimension(:), allocatable :: axisIds, xlinePoses
+        integer, dimension(:), allocatable :: axisIds, xlinePoses, nodeIds
         
-        integer totalNodes
-        integer num
+        integer totalNodes, num, i, cnt
         num = 1
         
         ! すべての行を取得しておく
@@ -142,23 +142,39 @@
         totalNodes = TotalRecordingNodes(lines)
         
         ALLOCATE (headers(totalNodes))
-        ALLOCATE (this%nodeIds(totalNodes))
+        ALLOCATE (nodeIds(totalNodes))
         ALLOCATE (axisIds(totalNodes))
         ALLOCATE (xlinePoses(totalNodes))
         
         ALLOCATE (this%positions(3,com%numofTimes,input%maximumNodeId))
+        ALLOCATE (this%enableNodeIds(input%maximumNodeId))
         this%positions = 0
+        this%enableNodeIds = 0
         this%numofTimes = com%numofTimes
         this%numofNodes = input%maximumNodeId
         this%partName = input%partName
         
-        CALL ScanNodeIds(lines, this%nodeIds, axisIds, xlinePoses)
-        CALL RecordingPositions(lines, this%nodeIds, axisIds, xlinePoses, this%positions, com%numofTimes, input%maximumNodeId)
+        CALL ScanNodeIds(lines, nodeIds, axisIds, xlinePoses)
+        CALL RecordingPositions(lines, nodeIds, axisIds, xlinePoses, this%positions, com%numofTimes, input%maximumNodeId)
+        
+        do i = 1, SIZE(nodeIds)
+            if (nodeIds(i) <= input%maximumNodeId) then
+                this%enableNodeIds(nodeIds(i)) = 1
+            end if
+        end do
+        
+        cnt = 0
+        do i = 1, SIZE(this%enableNodeIds)
+            if (this%enableNodeIds(i) == 1) then
+                cnt = cnt + 1
+            end if
+        end do
         
         DEALLOCATE (lines)
         DEALLOCATE (headers)
         DEALLOCATE (axisIds)
         DEALLOCATE (xlinePoses)
+        DEALLOCATE (nodeIds)
         
     end function
     

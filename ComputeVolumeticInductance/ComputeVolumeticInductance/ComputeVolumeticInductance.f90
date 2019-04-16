@@ -85,9 +85,9 @@
             assemblies(i) = init_Assembly(reports(i), partInputs(i), com)
         end do
         
-        
-        
     end subroutine
+    
+    
     
     subroutine Main()
         USE FileUtil
@@ -102,7 +102,7 @@
         integer startFD
         
         type(Config) conf
-        type(ReportFile), dimension(:), allocatable :: partReports
+        type(ReportFile), dimension(:), allocatable :: partReports, topReports, bottomReports
         type(Assembly), dimension(:), allocatable :: partAssemblies
         
         startFD = 22
@@ -117,6 +117,8 @@
         PRINT *, "PREPARED LOADING PART REPORT FILE"
         
         ! Coilの構築
+        ALLOCATE (topReports(SIZE(coilInputs)))
+        ALLOCATE (bottomReports(SIZE(coilInputs)))
         
         CALL conf%Release()
     end subroutine
