@@ -56,7 +56,7 @@
         implicit none
         type(Config), intent(in) :: conf
         type(InputFile), dimension(:), intent(in) :: partInputs
-        type(CommonReport) com
+        type(CommonReport) :: com
         type(ReportFile), dimension(:), allocatable, intent(out) :: reports
         type(Assembly), dimension(:), allocatable, intent(out) :: assemblies
         integer i, j
@@ -87,7 +87,35 @@
         
     end subroutine
     
-    
+    subroutine PrepareCoilReportFile(conf, coilInputs, topReports, bottomReports, coils)
+        USE ConfigClass
+        USE InputFileClass
+        USE ReportFileClass
+        USE CommonReportClass
+        USE CoilClass
+        implicit none
+        type(Config), intent(in) :: conf
+        type(InputFile), dimension(:), intent(in) :: coilInputs
+        type(ReportFile), dimension(:), allocatable, intent(out) :: topReports, bottomReports
+        type(Coil), dimension(:), allocatable, intent(out) :: coils
+        type(CommonReport) com
+        integer i
+        
+        ALLOCATE (topReports(SIZE(coilInputs)))
+        ALLOCATE (bottomReports(SIZE(coilInputs)))
+        ALLOCATE (coils(SIZE(coilInputs)))
+        
+        com = init_CommonReport(conf%partFDs(1))
+        
+        do i = 1, SIZE(conf%coilTopFDs)
+            topReports(i) = init_ReportFile(conf%coilTopFDs(i), coilInputs(i), com)
+            bottomReports(i) = init_ReportFile(conf%coilBottomFDs(i), coilInputs(i), com)
+        end do
+        
+        do i = 1, SIZE(coilInputs)
+            coils(i) = init_Coil(coilInputs(i), topReports(i), bottomReports(i), com)
+        end do
+    end subroutine
     
     subroutine Main()
         USE FileUtil
@@ -96,14 +124,16 @@
         USE ReportFileClass
         USE AssemblyClass
         USE ConfigClass
+        USE CoilClass
         
         implicit none
         type(InputFile), dimension(:), allocatable :: partInputs, coilInputs
-        integer startFD
+        integer startFD, i
         
         type(Config) conf
         type(ReportFile), dimension(:), allocatable :: partReports, topReports, bottomReports
         type(Assembly), dimension(:), allocatable :: partAssemblies
+        type(Coil), dimension(:), allocatable :: coils
         
         startFD = 22
         conf = init_Config(startFD, "config.conf")
@@ -117,8 +147,8 @@
         PRINT *, "PREPARED LOADING PART REPORT FILE"
         
         ! Coilの構築
-        ALLOCATE (topReports(SIZE(coilInputs)))
-        ALLOCATE (bottomReports(SIZE(coilInputs)))
+        CALL PrepareCoilReportFile(conf, coilInputs, topReports, bottomReports, coils)
+        
         
         CALL conf%Release()
     end subroutine

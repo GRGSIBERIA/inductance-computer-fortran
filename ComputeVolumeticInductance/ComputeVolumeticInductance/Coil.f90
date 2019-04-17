@@ -9,17 +9,16 @@
     
     contains
     
-    function ComputeCentroid(report) result(centroid)
+    subroutine ComputeCentroid(report, centroid, numofTimes)
         USE ReportFileClass
         implicit none
         type(ReportFile), intent(in) :: report
-        double precision, dimension(:,:), allocatable :: centroid
+        integer, intent(in) :: numofTimes
+        double precision, dimension(3,numofTimes), intent(out) :: centroid
         integer ti, ni
         double precision diff
         
         diff = 1.0d0 / report%numofEnableNodes
-        
-        ALLOCATE (centroid(3, report%numofTimes))
         
         ! 重心を求める
         do ni = 1, report%numofNodes
@@ -33,7 +32,7 @@
         ! 重心の平均を取る
         centroid = centroid * diff
         
-    end function
+    end subroutine
     
     function ComputeForward(numofTimes, top, bottom) result(forward)
         USE Math
@@ -82,7 +81,6 @@
         implicit none
         type(ReportFile), intent(in) :: report
         double precision, dimension(3), intent(in) :: centroid
-        double precision, dimension(3) :: vector
         integer ni
         double precision temp
         
@@ -118,15 +116,15 @@
         type(ReportFile), intent(in) :: topReport, bottomReport
         type(CommonReport), intent(in) :: com
         
-        double precision, dimension(:,:), allocatable :: topCentroid, bottomCentroid
-        
         ALLOCATE (this%positions(3,com%numofTimes))
         ALLOCATE (this%forwards(3,com%numofTimes))
         ALLOCATE (this%rights(3,com%numofTimes))
+        ALLOCATE (this%topCentroid(3,com%numofTimes))
+        ALLOCATE (this%bottomCentroid(3,com%numofTimes))
         
         ! 各レポートの重心を求めてコイルの中心座標を決める
-        this%topCentroid = ComputeCentroid(topReport)
-        this%bottomCentroid = ComputeCentroid(bottomReport)
+        CALL ComputeCentroid(topReport, this%topCentroid, com%numofTimes)
+        CALL ComputeCentroid(bottomReport, this%bottomCentroid, com%numofTimes)
         this%positions = (this%topCentroid - this%bottomCentroid) * 0.5d0 + this%bottomCentroid
         
         ! 正面と右手を計算する
@@ -134,8 +132,8 @@
         this%rights = ComputeRight(com%numofTimes, this%forwards)
         
         ! 半径と長さは何があっても変わらないものとする
-        this%radius = ComputeRadius(topReport, topCentroid(:,1))
-        this%height = ComputeHeight(topCentroid(:,1), bottomCentroid(:,1))
+        this%radius = ComputeRadius(topReport, this%topCentroid(:,1))
+        this%height = ComputeHeight(this%topCentroid(:,1), this%bottomCentroid(:,1))
         
     end function
     
