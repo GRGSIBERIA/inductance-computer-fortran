@@ -9,10 +9,12 @@
     
     contains
     
-    subroutine ComputeCentroid(report, centroid, numofTimes)
+    subroutine ComputeCentroid(report, input, centroid, numofTimes)
         USE ReportFileClass
+        USE InputFileClass
         implicit none
         type(ReportFile), intent(in) :: report
+        type(InputFile), intent(in) :: input
         integer, intent(in) :: numofTimes
         double precision, dimension(3,numofTimes), intent(out) :: centroid
         integer ti, ni
@@ -24,7 +26,9 @@
         do ni = 1, report%numofNodes
             if (report%enableNodeIds(ni) == 1) then
                 do ti = 1, report%numofTimes
-                    centroid(:,ti) = centroid(:,ti) + report%positions(:,ti,ni)
+                    ! ローカル座標を計算する（２行目）は別関数にしておく
+                    centroid(:,ti) = centroid(:,ti) + &
+                        report%positions(:,ti,ni) + input%localPosition + input%positions(:,ni)
                 end do
             end if
         end do
@@ -123,8 +127,8 @@
         ALLOCATE (this%bottomCentroid(3,com%numofTimes))
         
         ! 各レポートの重心を求めてコイルの中心座標を決める
-        CALL ComputeCentroid(topReport, this%topCentroid, com%numofTimes)
-        CALL ComputeCentroid(bottomReport, this%bottomCentroid, com%numofTimes)
+        CALL ComputeCentroid(topReport, input, this%topCentroid, com%numofTimes)
+        CALL ComputeCentroid(bottomReport, input, this%bottomCentroid, com%numofTimes)
         this%positions = (this%topCentroid - this%bottomCentroid) * 0.5d0 + this%bottomCentroid
         
         ! 正面と右手を計算する

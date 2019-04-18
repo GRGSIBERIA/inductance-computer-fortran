@@ -118,6 +118,23 @@
         
     end subroutine
     
+    subroutine AddLocalPositions(numofTimes, numofNodes, positions, localPosition, enables)
+        implicit none
+        integer, intent(in) :: numofTimes, numofNodes
+        double precision, dimension(3,numofTimes,numofNodes), intent(inout) :: positions
+        double precision, dimension(3), intent(in) :: localPosition
+        integer, dimension(numofNodes) :: enables
+        integer ti, ni
+        
+        do ni = 1, numofNodes
+            if (enables(ni) == 1) then
+                do ti = 1, numofTimes
+                    positions(:,ti,ni) = positions(:,ti,ni) + localPosition
+                end do
+            end if
+        end do
+        
+    end subroutine
     
     ! 個別のレポートファイルのデータ
     type(ReportFile) function init_ReportFile(fd, input, com) result(this)
@@ -163,12 +180,15 @@
             end if
         end do
         
-        cnt = 0
+        this%numofEnableNodes = 0
         do i = 1, SIZE(this%enableNodeIds)
             if (this%enableNodeIds(i) == 1) then
-                cnt = cnt + 1
+                this%numofEnableNodes = this%numofEnableNodes + 1
             end if
         end do
+        
+        ! このサブルーチンは座標を足し合わせるが，実際に足し合わせる処理はAssemblyやCoilに移譲しているので使用禁止
+        !CALL AddLocalPositions(this%numofTimes, this%numofNodes, this%positions, input%localPosition, this%enableNodeIds)
         
         DEALLOCATE (lines)
         DEALLOCATE (headers)
